@@ -1,0 +1,14 @@
+{
+  "name": "eslint-plugin-html-a11y",
+  "version": "0.1.0",
+  "description": "ESLint plugin for WCAG accessibility checks on HTML templates parsed with @html-eslint/parser",
+  "type": "module",
+  "exports": { ".": "./index.js" },
+  "files": ["index.js", "lib/"],
+  "engines": { "node": ">=18" },
+  "keywords": ["eslint", "eslint-plugin", "html", "accessibility", "a11y", "wcag"],
+  "author": "Nicola Carkaxhija",
+  "license": "MIT",
+  "peerDependencies": { "@html-eslint/parser": ">=0.23.0", "eslint": ">=9.0.0" },
+  "dependencies": { "aria-query": "^5.3.2" }
+}
