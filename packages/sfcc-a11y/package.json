@@ -1,0 +1,26 @@
+{
+  "name": "sfcc-a11y",
+  "version": "1.0.0-alpha.0",
+  "description": "Zero-config WCAG accessibility CLI for SFCC ISML and XML files",
+  "type": "module",
+  "bin": {
+    "sfcc-a11y": "bin/sfcc-a11y.js"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "bin/",
+    "lib/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Nicola Carkaxhija",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^12.0.0",
+    "eslint-plugin-sfcc-a11y": "*"
+  }
+}

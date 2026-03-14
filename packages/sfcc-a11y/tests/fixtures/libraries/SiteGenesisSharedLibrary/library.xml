@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.demandware.com/xml/impex/library/2006-10-31"
+         library-id="SiteGenesisSharedLibrary">
+
+  <content content-id="homepage-banner">
+    <custom-attributes>
+      <custom-attribute attribute-id="body" xml:lang="x-default"><![CDATA[
+        <p>Welcome to our store.</p>
+        <img src="banner.jpg">
+        <button></button>
+      ]]></custom-attribute>
+    </custom-attributes>
+  </content>
+
+  <content content-id="footer-links">
+    <custom-attributes>
+      <custom-attribute attribute-id="body" xml:lang="x-default"><![CDATA[
+        <a href="/about"><img src="logo.png" alt="Company logo"></a>
+        <a href="/contact">Contact us</a>
+      ]]></custom-attribute>
+    </custom-attributes>
+  </content>
+
+</library>

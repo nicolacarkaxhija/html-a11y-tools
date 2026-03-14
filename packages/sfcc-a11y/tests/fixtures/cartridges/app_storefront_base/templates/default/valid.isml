@@ -1,0 +1,15 @@
+<html lang="en">
+<head><title>Valid page</title></head>
+<body>
+  <h1>Welcome</h1>
+  <img alt="storefront banner" src="banner.jpg">
+  <img alt="" role="presentation" src="decorative.jpg">
+  <button>Add to cart</button>
+  <a href="/products">Shop now</a>
+  <label for="email">Email address</label>
+  <input type="email" id="email">
+  <nav>
+    <a href="/home">Home</a>
+  </nav>
+</body>
+</html>

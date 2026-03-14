@@ -1,0 +1,8 @@
+<html lang="en">
+<body>
+  <%-- ISML dynamic expressions should NOT trigger violations --%>
+  <div role="slider" tabindex="0" aria-valuenow="${product.quantity}" aria-valuemin="1" aria-valuemax="${product.maxQty}"></div>
+  <button aria-label="${pdict.buttonLabel}">x</button>
+  <img alt="${pdict.imageAlt}" src="product.jpg">
+</body>
+</html>
