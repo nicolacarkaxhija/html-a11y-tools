@@ -4,6 +4,7 @@ import htmlParser from '@html-eslint/parser';
 import plugin, { sanitize } from 'eslint-plugin-sfcc-a11y';
 
 const recommendedRules = plugin.configs['flat/recommended'][0].rules;
+const sfccSettings = plugin.configs['flat/recommended'][0].settings;
 
 const ISML_GLOB = '**/*.isml';
 const XML_GLOB = '**/libraries/**/*.xml';
@@ -71,6 +72,7 @@ export async function lint(rawPatterns) {
         files: ['**/*.html'],
         plugins: { 'sfcc-a11y': plugin },
         languageOptions: { parser: htmlParser },
+        settings: sfccSettings,
         rules: recommendedRules,
       },
     ],

@@ -13,6 +13,10 @@ const VALID_ISML = path.join(
   FIXTURES,
   'cartridges/app_storefront_base/templates/default/valid.isml',
 );
+const DYNAMIC_ISML = path.join(
+  FIXTURES,
+  'cartridges/app_storefront_base/templates/default/dynamic.isml',
+);
 const LIBRARY_XML = path.join(FIXTURES, 'libraries/SiteGenesisSharedLibrary/library.xml');
 
 describe('lint()', () => {
@@ -26,6 +30,14 @@ describe('lint()', () => {
     expect(rules).toContain('sfcc-a11y/button-name');
     expect(rules).toContain('sfcc-a11y/anchor-is-valid');
     expect(rules).toContain('sfcc-a11y/label');
+  });
+
+  it('does not report violations for ISML dynamic expressions (sentinel pass-through)', async () => {
+    // Ensures the sfcc-a11y settings (dynamicValueMarker / dynamicContentMarker) are applied
+    // to virtual .html blocks produced by the ISML sanitizer.
+    const results = await lint([DYNAMIC_ISML]);
+    const total = results.reduce((sum, r) => sum + r.messages.length, 0);
+    expect(total).toBe(0);
   });
 
   it('reports no violations in valid.isml', async () => {
