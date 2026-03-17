@@ -15,16 +15,17 @@
  * Inspired by: eslint-plugin-jsx-a11y/interactive-supports-focus
  */
 
-import { hasVisibleTextContent, hasAriaLabel, isAriaHidden } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { hasVisibleTextContent, hasAriaLabel, isAriaHidden } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require buttons to have a discernible accessible name (WCAG 4.1.2)',
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

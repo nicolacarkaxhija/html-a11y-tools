@@ -13,18 +13,19 @@
  * Inspired by: eslint-plugin-jsx-a11y/scope
  */
 
-import { getAttr } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 const VALID_SCOPE_VALUES = new Set(['col', 'row', 'colgroup', 'rowgroup']);
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require valid scope attribute values on <th> elements (WCAG 1.3.1)',
       wcag: '1.3.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

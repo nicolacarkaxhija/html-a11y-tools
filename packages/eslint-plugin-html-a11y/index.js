@@ -1,32 +1,34 @@
-import htmlParser from '@html-eslint/parser';
+'use strict';
 
-import anchorIsValid from './lib/rules/anchor-is-valid.js';
-import ariaHiddenOnFocusable from './lib/rules/aria-hidden-on-focusable.js';
-import ariaProps from './lib/rules/aria-props.js';
-import ariaProptypes from './lib/rules/aria-proptypes.js';
-import ariaRequiredAttr from './lib/rules/aria-required-attr.js';
-import ariaRole from './lib/rules/aria-role.js';
-import autocompleteValid from './lib/rules/autocomplete-valid.js';
-import buttonName from './lib/rules/button-name.js';
-import headingHasContent from './lib/rules/heading-has-content.js';
-import htmlHasLang from './lib/rules/html-has-lang.js';
-import imgAlt from './lib/rules/img-alt.js';
-import interactiveSupportsFocus from './lib/rules/interactive-supports-focus.js';
-import label from './lib/rules/label.js';
-import langValue from './lib/rules/lang-value.js';
-import linkName from './lib/rules/link-name.js';
-import mediaHasCaption from './lib/rules/media-has-caption.js';
-import noAccessKey from './lib/rules/no-access-key.js';
-import noAutofocus from './lib/rules/no-autofocus.js';
-import noDistractingElements from './lib/rules/no-distracting-elements.js';
-import noNoninteractiveTabindex from './lib/rules/no-noninteractive-tabindex.js';
-import noRedundantRole from './lib/rules/no-redundant-role.js';
-import objectAlt from './lib/rules/object-alt.js';
-import roleSupportsAriaProps from './lib/rules/role-supports-aria-props.js';
-import scopeAttrValid from './lib/rules/scope-attr-valid.js';
-import tabindexNoPositive from './lib/rules/tabindex-no-positive.js';
+const htmlParser = require('@html-eslint/parser');
 
-export const rules = {
+const anchorIsValid = require('./lib/rules/anchor-is-valid.js');
+const ariaHiddenOnFocusable = require('./lib/rules/aria-hidden-on-focusable.js');
+const ariaProps = require('./lib/rules/aria-props.js');
+const ariaProptypes = require('./lib/rules/aria-proptypes.js');
+const ariaRequiredAttr = require('./lib/rules/aria-required-attr.js');
+const ariaRole = require('./lib/rules/aria-role.js');
+const autocompleteValid = require('./lib/rules/autocomplete-valid.js');
+const buttonName = require('./lib/rules/button-name.js');
+const headingHasContent = require('./lib/rules/heading-has-content.js');
+const htmlHasLang = require('./lib/rules/html-has-lang.js');
+const imgAlt = require('./lib/rules/img-alt.js');
+const interactiveSupportsFocus = require('./lib/rules/interactive-supports-focus.js');
+const label = require('./lib/rules/label.js');
+const langValue = require('./lib/rules/lang-value.js');
+const linkName = require('./lib/rules/link-name.js');
+const mediaHasCaption = require('./lib/rules/media-has-caption.js');
+const noAccessKey = require('./lib/rules/no-access-key.js');
+const noAutofocus = require('./lib/rules/no-autofocus.js');
+const noDistractingElements = require('./lib/rules/no-distracting-elements.js');
+const noNoninteractiveTabindex = require('./lib/rules/no-noninteractive-tabindex.js');
+const noRedundantRole = require('./lib/rules/no-redundant-role.js');
+const objectAlt = require('./lib/rules/object-alt.js');
+const roleSupportsAriaProps = require('./lib/rules/role-supports-aria-props.js');
+const scopeAttrValid = require('./lib/rules/scope-attr-valid.js');
+const tabindexNoPositive = require('./lib/rules/tabindex-no-positive.js');
+
+const rules = {
   'anchor-is-valid': anchorIsValid,
   'aria-hidden-on-focusable': ariaHiddenOnFocusable,
   'aria-props': ariaProps,
@@ -71,4 +73,4 @@ plugin.configs = {
   ],
 };
 
-export default plugin;
+module.exports = plugin;

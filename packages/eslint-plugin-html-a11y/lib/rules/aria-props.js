@@ -10,15 +10,16 @@
  * Inspired by: eslint-plugin-jsx-a11y/aria-props
  */
 
-import { isValidAriaProp } from '../utils/aria.js';
+const { isValidAriaProp } = require('../utils/aria.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require valid aria-* attribute names (WCAG 4.1.2)',
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

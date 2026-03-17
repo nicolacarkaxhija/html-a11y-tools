@@ -5,14 +5,14 @@
  * @see https://www.w3.org/TR/wai-aria-1.2/
  */
 
-import { roles, aria } from 'aria-query';
+const { roles, aria } = require('aria-query');
 
 /**
  * Returns true if the given string is a valid ARIA role.
  * @param {string} role
  * @returns {boolean}
  */
-export function isValidAriaRole(role) {
+function isValidAriaRole(role) {
   return roles.has(role);
 }
 
@@ -21,7 +21,7 @@ export function isValidAriaRole(role) {
  * @param {string} prop  e.g. "aria-label"
  * @returns {boolean}
  */
-export function isValidAriaProp(prop) {
+function isValidAriaProp(prop) {
   return aria.has(prop);
 }
 
@@ -30,7 +30,7 @@ export function isValidAriaProp(prop) {
  * @param {string} prop  e.g. "aria-hidden"
  * @returns {{ type: string, values?: string[] } | undefined}
  */
-export function getAriaPropType(prop) {
+function getAriaPropType(prop) {
   return aria.get(prop);
 }
 
@@ -40,7 +40,7 @@ export function getAriaPropType(prop) {
  * @returns {string[]}
  */
 /* c8 ignore next 3 -- aria-query v5 always populates requiredProps; cross-product branch is unreachable */
-export function getRequiredPropsForRole(role) {
+function getRequiredPropsForRole(role) {
   return Object.keys(roles.get(role)?.requiredProps ?? {});
 }
 
@@ -49,7 +49,7 @@ export function getRequiredPropsForRole(role) {
  * @param {string} role
  * @returns {boolean}
  */
-export function isAbstractRole(role) {
+function isAbstractRole(role) {
   const roleEntry = roles.get(role);
   return roleEntry ? roleEntry.abstract === true : false;
 }
@@ -60,6 +60,8 @@ export function isAbstractRole(role) {
  * @param {string} role
  * @returns {string[]}
  */
-export function getSupportedPropsForRole(role) {
+function getSupportedPropsForRole(role) {
   return Object.keys(roles.get(role)?.props ?? {});
 }
+
+module.exports = { isValidAriaRole, isValidAriaProp, getAriaPropType, getRequiredPropsForRole, isAbstractRole, getSupportedPropsForRole };

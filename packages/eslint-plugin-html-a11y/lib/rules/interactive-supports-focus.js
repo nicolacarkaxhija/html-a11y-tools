@@ -14,17 +14,18 @@
  * Inspired by: eslint-plugin-jsx-a11y/interactive-supports-focus
  */
 
-import { getAttr, isNativelyFocusable, isInteractiveRole } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, isNativelyFocusable, isInteractiveRole } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description:
         'Require elements with interactive ARIA roles to be keyboard-focusable (WCAG 2.1.1)',
       wcag: '2.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

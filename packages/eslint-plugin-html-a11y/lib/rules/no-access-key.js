@@ -12,13 +12,14 @@
  */
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'suggestion',
     docs: {
       description:
         'Disallow accesskey attribute — it creates keyboard shortcut conflicts (WCAG 2.1.4)',
       wcag: '2.1.4',
+      level: 'A',
       recommended: true,
     },
     messages: {

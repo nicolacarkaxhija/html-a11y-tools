@@ -10,18 +10,19 @@
  * Inspired by: eslint-plugin-jsx-a11y/role-supports-aria-props
  */
 
-import { getAttr } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
-import { isValidAriaRole, getSupportedPropsForRole } from '../utils/aria.js';
+const { getAttr } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
+const { isValidAriaRole, getSupportedPropsForRole } = require('../utils/aria.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description:
         "Require aria-* attributes to be supported by the element's ARIA role (WCAG 4.1.2)",
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

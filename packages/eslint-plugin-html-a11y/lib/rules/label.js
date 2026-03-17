@@ -22,19 +22,20 @@
  *              eslint-plugin-vuejs-accessibility/form-control-has-label
  */
 
-import { getAttr, hasAriaLabel } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, hasAriaLabel } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** Input types that are self-labelling or exempt from label requirements. */
 const EXEMPT_INPUT_TYPES = new Set(['hidden', 'submit', 'reset', 'button', 'image']);
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require form controls to have an accessible label (WCAG 1.3.1)',
       wcag: '1.3.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

@@ -10,15 +10,16 @@
  * Inspired by: eslint-plugin-jsx-a11y/html-has-lang
  */
 
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require lang attribute on <html> element (WCAG 3.1.1)',
       wcag: '3.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

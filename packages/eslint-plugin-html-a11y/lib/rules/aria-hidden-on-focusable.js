@@ -14,16 +14,17 @@
  * Inspired by: eslint-plugin-jsx-a11y/no-aria-hidden-on-focusable
  */
 
-import { getAttr, isNativelyFocusable } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, isNativelyFocusable } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Disallow aria-hidden="true" on focusable elements (WCAG 4.1.2)',
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

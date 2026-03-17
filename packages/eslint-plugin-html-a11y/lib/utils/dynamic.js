@@ -13,12 +13,13 @@
  *   }
  */
 
+/* c8 ignore next 5 */
 /**
  * Reads the configured dynamic marker strings from ESLint context settings.
  * @param {import('eslint').Rule.RuleContext} context
  * @returns {{ valueMarker: string | null, contentMarker: string | null }}
  */
-export function getMarkers(context) {
+function getMarkers(context) {
   const s = context.settings?.['html-a11y'] ?? {};
   return {
     valueMarker: s.dynamicValueMarker ?? null,
@@ -33,6 +34,8 @@ export function getMarkers(context) {
  * @param {string | null} marker
  * @returns {boolean}
  */
-export function isDynamicValue(v, marker) {
+function isDynamicValue(v, marker) {
   return marker != null && typeof v === 'string' && v.includes(marker);
 }
+
+module.exports = { getMarkers, isDynamicValue };

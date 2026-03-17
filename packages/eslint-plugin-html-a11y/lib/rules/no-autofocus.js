@@ -11,13 +11,14 @@
  */
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'suggestion',
     docs: {
       description:
         'Disallow autofocus attribute — it disrupts assistive technology focus management (WCAG 2.4.3)',
       wcag: '2.4.3',
+      level: 'A',
       recommended: true,
     },
     messages: {

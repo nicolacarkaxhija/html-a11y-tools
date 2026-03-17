@@ -16,8 +16,8 @@
  * Inspired by: eslint-plugin-jsx-a11y/no-redundant-roles
  */
 
-import { getAttr, getImplicitRole } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, getImplicitRole } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /**
  * Maps <input type> to its implicit ARIA role.
@@ -40,13 +40,14 @@ const INPUT_TYPE_ROLES = new Map([
 ]);
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'suggestion',
     docs: {
       description:
         "Disallow redundant ARIA roles that duplicate the element's implicit role (WCAG 4.1.2)",
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

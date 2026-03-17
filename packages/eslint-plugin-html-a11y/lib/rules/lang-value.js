@@ -9,17 +9,18 @@
  * Inspired by: eslint-plugin-jsx-a11y/lang
  */
 
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 const BCP47_RE = /^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$/;
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require a valid BCP 47 language tag on <html lang> (WCAG 3.1.1)',
       wcag: '3.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

@@ -9,16 +9,17 @@
  * Inspired by: eslint-plugin-jsx-a11y/object-has-accessible-text
  */
 
-import { getAttr, hasAriaLabel, hasVisibleTextContent } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, hasAriaLabel, hasVisibleTextContent } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require accessible text alternative on <object> (WCAG 1.1.1)',
       wcag: '1.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

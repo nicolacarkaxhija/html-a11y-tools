@@ -13,16 +13,17 @@
  * Inspired by: eslint-plugin-jsx-a11y/no-noninteractive-tabindex
  */
 
-import { getAttr, isInteractiveRole, isNativelyFocusable } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, isInteractiveRole, isNativelyFocusable } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Disallow tabindex >= 0 on non-interactive elements (WCAG 2.1.1)',
       wcag: '2.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

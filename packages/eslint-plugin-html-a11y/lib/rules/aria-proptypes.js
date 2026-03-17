@@ -10,8 +10,8 @@
  * Inspired by: eslint-plugin-jsx-a11y/aria-proptypes
  */
 
-import { getAriaPropType, isValidAriaProp } from '../utils/aria.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAriaPropType, isValidAriaProp } = require('../utils/aria.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** Valid values for boolean ARIA attributes. */
 const BOOLEAN_VALUES = new Set(['true', 'false']);
@@ -54,12 +54,13 @@ function isValidValue(typeDef, value) {
 }
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require valid aria-* attribute values (WCAG 4.1.2)',
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

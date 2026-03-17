@@ -13,16 +13,17 @@
  *              eslint-plugin-vuejs-accessibility/alt-text
  */
 
-import { getAttr, hasAriaLabel, isAriaHidden } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, hasAriaLabel, isAriaHidden } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require alt attribute on <img> and <input type="image"> elements (WCAG 1.1.1)',
       wcag: '1.1.1',
+      level: 'A',
       recommended: true,
     },
     messages: {

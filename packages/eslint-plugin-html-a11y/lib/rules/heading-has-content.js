@@ -10,18 +10,19 @@
  * Inspired by: eslint-plugin-jsx-a11y/heading-has-content
  */
 
-import { hasVisibleTextContent, isAriaHidden } from '../utils/dom.js';
-import { getMarkers } from '../utils/dynamic.js';
+const { hasVisibleTextContent, isAriaHidden } = require('../utils/dom.js');
+const { getMarkers } = require('../utils/dynamic.js');
 
 const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require heading elements to have non-empty content (WCAG 2.4.6)',
       wcag: '2.4.6',
+      level: 'AA',
       recommended: true,
     },
     messages: {

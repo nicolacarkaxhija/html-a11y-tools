@@ -10,19 +10,20 @@
  * Inspired by: eslint-plugin-jsx-a11y/anchor-is-valid
  */
 
-import { getAttr } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** href values that do not navigate to a real destination. */
 const INVALID_HREF_PATTERN = /^(#$|javascript:)/i;
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require <a> elements to have a valid navigating href (WCAG 2.4.4)',
       wcag: '2.4.4',
+      level: 'A',
       recommended: true,
     },
     messages: {

@@ -10,15 +10,16 @@
  * Inspired by: eslint-plugin-jsx-a11y/tabindex-no-positive
  */
 
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Forbid positive tabindex values (WCAG 2.4.3)',
       wcag: '2.4.3',
+      level: 'A',
       recommended: true,
     },
     messages: {

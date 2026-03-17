@@ -9,8 +9,8 @@
  * Inspired by: eslint-plugin-jsx-a11y/autocomplete-valid
  */
 
-import { getAttr } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /**
  * Input types that do not accept an autocomplete attribute with a field token
@@ -121,12 +121,13 @@ function isValidAutocomplete(value) {
 }
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require valid autocomplete attribute on form controls (WCAG 1.3.5)',
       wcag: '1.3.5',
+      level: 'AA',
       recommended: true,
     },
     messages: {

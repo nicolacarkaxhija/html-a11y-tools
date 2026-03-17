@@ -10,17 +10,18 @@
  * Inspired by: eslint-plugin-jsx-a11y/aria-role
  */
 
-import { isValidAriaRole, isAbstractRole } from '../utils/aria.js';
-import { getAttr } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { isValidAriaRole, isAbstractRole } = require('../utils/aria.js');
+const { getAttr } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Require valid ARIA role values (WCAG 4.1.2)',
       wcag: '4.1.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

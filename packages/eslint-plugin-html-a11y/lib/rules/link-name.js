@@ -20,17 +20,18 @@
  * Inspired by: eslint-plugin-jsx-a11y/anchor-has-content
  */
 
-import { getAttr, hasVisibleTextContent, hasAriaLabel, isAriaHidden } from '../utils/dom.js';
-import { getMarkers, isDynamicValue } from '../utils/dynamic.js';
+const { getAttr, hasVisibleTextContent, hasAriaLabel, isAriaHidden } = require('../utils/dom.js');
+const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description:
         'Require <a> and <area href> elements to have a discernible accessible name (WCAG 2.4.4)',
       wcag: '2.4.4',
+      level: 'A',
       recommended: true,
     },
     messages: {

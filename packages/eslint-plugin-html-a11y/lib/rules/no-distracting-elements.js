@@ -10,12 +10,13 @@
  */
 
 /** @type {import('eslint').Rule.RuleModule} */
-export default {
+module.exports = {
   meta: {
     type: 'problem',
     docs: {
       description: 'Forbid <marquee> and <blink> elements (WCAG 2.2.2)',
       wcag: '2.2.2',
+      level: 'A',
       recommended: true,
     },
     messages: {

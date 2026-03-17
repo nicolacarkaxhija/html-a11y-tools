@@ -101,7 +101,7 @@ const IMPLICIT_ROLES = new Map([
  * @param {string} attrName
  * @returns {string | true | undefined}
  */
-export function getAttr(node, attrName) {
+function getAttr(node, attrName) {
   const attr = node.attributes?.find((a) => a.key?.value?.toLowerCase() === attrName.toLowerCase());
   if (!attr) return undefined;
   return attr.value?.value ?? true;
@@ -109,7 +109,7 @@ export function getAttr(node, attrName) {
 
 /* c8 ignore next 3 -- v8 maps optional-chain branches from getAttr's callback to surrounding lines */
 /** Recursively collects all text content from an element's subtree. */
-export function getTextContent(node) {
+function getTextContent(node) {
   if (!Array.isArray(node.children)) return '';
   return node.children
     .map((child) => {
@@ -127,7 +127,7 @@ export function getTextContent(node) {
  * @param {string | null} [contentMarker]
  * @returns {boolean}
  */
-export function hasVisibleTextContent(node, contentMarker = null) {
+function hasVisibleTextContent(node, contentMarker = null) {
   const text = getTextContent(node);
   if (contentMarker && text.includes(contentMarker)) return true;
   return text.trim().length > 0;
@@ -139,7 +139,7 @@ export function hasVisibleTextContent(node, contentMarker = null) {
  * @param {{ attributes?: any[] }} node
  * @returns {boolean}
  */
-export function hasAriaLabel(node) {
+function hasAriaLabel(node) {
   const ariaLabel = getAttr(node, 'aria-label');
   if (ariaLabel && ariaLabel !== true && ariaLabel.trim() !== '') return true;
   const ariaLabelledBy = getAttr(node, 'aria-labelledby');
@@ -152,7 +152,7 @@ export function hasAriaLabel(node) {
  * @param {{ attributes?: any[] }} node
  * @returns {boolean}
  */
-export function isAriaHidden(node) {
+function isAriaHidden(node) {
   return getAttr(node, 'aria-hidden') === 'true';
 }
 
@@ -161,7 +161,7 @@ export function isAriaHidden(node) {
  * @param {string} tagName
  * @returns {boolean}
  */
-export function isNativelyFocusable(tagName) {
+function isNativelyFocusable(tagName) {
   return NATIVELY_FOCUSABLE_ELEMENTS.has(tagName.toLowerCase());
 }
 
@@ -170,7 +170,7 @@ export function isNativelyFocusable(tagName) {
  * @param {string} role
  * @returns {boolean}
  */
-export function isInteractiveRole(role) {
+function isInteractiveRole(role) {
   return INTERACTIVE_ROLES.has(role);
 }
 
@@ -179,8 +179,8 @@ export function isInteractiveRole(role) {
  * @param {string} tagName
  * @returns {string | undefined}
  */
-export function getImplicitRole(tagName) {
+function getImplicitRole(tagName) {
   return IMPLICIT_ROLES.get(tagName.toLowerCase());
 }
 
-export { INTERACTIVE_ROLES };
+module.exports = { getAttr, getTextContent, hasVisibleTextContent, hasAriaLabel, isAriaHidden, isNativelyFocusable, isInteractiveRole, getImplicitRole, INTERACTIVE_ROLES };
