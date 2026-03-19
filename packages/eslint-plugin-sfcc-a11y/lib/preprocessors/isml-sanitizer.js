@@ -19,14 +19,14 @@
  *      with newlines inside multi-line tags preserved in place
  */
 
-import { EXPR_SENTINEL, CONTENT_SENTINEL } from '../utils/isml.js';
+const { EXPR_SENTINEL, CONTENT_SENTINEL } = require('../utils/isml.js');
 
 /**
  * Sanitizes ISML source text so it can be parsed as HTML.
  * @param {string} source  Raw ISML file contents
  * @returns {string}  Sanitized HTML-compatible source
  */
-export function sanitize(source) {
+function sanitize(source) {
   let result = source;
 
   // Step 1 — ISML tags that emit visible content → content sentinel.
@@ -74,3 +74,5 @@ export function sanitize(source) {
 
   return result;
 }
+
+module.exports = { sanitize };

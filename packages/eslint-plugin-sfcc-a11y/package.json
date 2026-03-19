@@ -2,7 +2,6 @@
   "name": "eslint-plugin-sfcc-a11y",
   "version": "2.0.0",
   "description": "SFCC adapter for eslint-plugin-html-a11y — adds ISML sanitizer and XML content-asset processor",
-  "type": "module",
   "exports": {
     ".": "./index.js"
   },

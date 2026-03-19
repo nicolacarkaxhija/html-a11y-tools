@@ -129,7 +129,7 @@ function postprocess(messages, filename) {
   return result;
 }
 
-export default {
+module.exports = {
   preprocess,
   postprocess,
   supportsAutofix: false,
