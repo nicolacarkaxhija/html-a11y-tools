@@ -1,5 +1,5 @@
-import path from 'path';
-import { wcagMap } from 'eslint-plugin-sfcc-a11y';
+const path = require('path');
+const { wcagMap } = require('eslint-plugin-sfcc-a11y');
 
 const SEVERITY = ['', 'warning', 'error'];
 
@@ -9,7 +9,7 @@ const SEVERITY = ['', 'warning', 'error'];
  * @param {import('eslint').ESLint.LintResult[]} results
  * @returns {string}
  */
-export function formatText(results) {
+function formatText(results) {
   let output = '';
   let totalErrors = 0;
   let totalWarnings = 0;
@@ -40,3 +40,5 @@ export function formatText(results) {
 
   return output;
 }
+
+module.exports = { formatText };

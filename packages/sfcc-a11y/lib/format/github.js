@@ -1,5 +1,5 @@
-import path from 'path';
-import { wcagMap } from 'eslint-plugin-sfcc-a11y';
+const path = require('path');
+const { wcagMap } = require('eslint-plugin-sfcc-a11y');
 
 /**
  * Formats ESLint results as GitHub Actions workflow commands.
@@ -8,7 +8,7 @@ import { wcagMap } from 'eslint-plugin-sfcc-a11y';
  * @param {import('eslint').ESLint.LintResult[]} results
  * @returns {string}
  */
-export function formatGithub(results) {
+function formatGithub(results) {
   let output = '';
 
   for (const result of results) {
@@ -29,3 +29,5 @@ export function formatGithub(results) {
 
   return output;
 }
+
+module.exports = { formatGithub };

@@ -1,32 +1,66 @@
 #!/usr/bin/env node
 /* c8 ignore file -- entry point tested via subprocess in bin.test.js */
+'use strict';
 
-import { createRequire } from 'module';
-import { Command } from 'commander';
-import { lint } from '../lib/linter.js';
-import { formatText } from '../lib/format/text.js';
-import { formatJson } from '../lib/format/json.js';
-import { formatGithub } from '../lib/format/github.js';
+const fs = require('fs');
+const path = require('path');
+const { Command } = require('commander');
+const { lint } = require('../lib/linter.js');
+const { formatText } = require('../lib/format/text.js');
+const { formatJson } = require('../lib/format/json.js');
+const { formatGithub } = require('../lib/format/github.js');
 
-const require = createRequire(import.meta.url);
-const { version } = require('../package.json');
+/**
+ * Load config from the first source found (cosmiconfig-style):
+ *   1. sfcc-a11y.config.js  — programmatic / dynamic config
+ *   2. .sfcc-a11yrc.json    — static JSON config
+ *   3. package.json         — "sfcc-a11y" key
+ * CLI flags always override whatever this returns.
+ */
+function loadConfig() {
+  const cwd = process.cwd();
+  try {
+    return require(path.join(cwd, 'sfcc-a11y.config.js'));
+  } catch {}
+  try {
+    return JSON.parse(fs.readFileSync(path.join(cwd, '.sfcc-a11yrc.json'), 'utf8'));
+  } catch {}
+  try {
+    const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf8'));
+    if (pkg['sfcc-a11y']) return pkg['sfcc-a11y'];
+  } catch {}
+  return {};
+}
 
-const DEFAULT_GLOBS = ['**/*.isml', '**/libraries/**/*.xml'];
+const fileConfig = loadConfig();
 
-const defaultFormat = process.env.GITHUB_ACTIONS === 'true' ? 'github' : 'text';
+const DEFAULT_GLOBS = fileConfig.paths ?? ['**/*.isml', '**/libraries/**/*.xml'];
+
+// Precedence: CLI flag > config file > GITHUB_ACTIONS env > 'text'
+const envFormat = process.env.GITHUB_ACTIONS === 'true' ? 'github' : 'text';
+const defaultFormat = fileConfig.format ?? envFormat;
+const defaultLevel = fileConfig.level ?? 'AA';
+const defaultSeverity = fileConfig.severity ?? 'warn';
 
 const program = new Command();
 program
   .name('sfcc-a11y')
   .description('Zero-config WCAG accessibility checker for SFCC ISML and XML files')
-  .version(version)
+  .version(require('../package.json').version)
   .argument('[paths...]', 'Files, directories, or globs to check (default: cwd)')
   .option('-f, --format <format>', 'Output format: text, json, github', defaultFormat)
+  .option('--level <level>', 'WCAG conformance level ceiling: A, AA, AAA', defaultLevel)
+  .option('--severity <severity>', 'Rule severity: warn, error', defaultSeverity)
   .option('--exit-zero', 'Always exit with code 0, even when violations are found')
   .action(async (paths, opts) => {
     try {
       const patterns = paths.length ? paths : DEFAULT_GLOBS;
-      const results = await lint(patterns);
+      const lintConfig = {
+        level: opts.level,
+        severity: opts.severity,
+        rules: fileConfig.rules,
+      };
+      const results = await lint(patterns, lintConfig);
       const total = results.reduce((sum, r) => sum + r.errorCount + r.warningCount, 0);
 
       let output;
@@ -40,7 +74,8 @@ program
 
       process.stdout.write(output);
 
-      if (!opts.exitZero && total > 0) process.exit(1);
+      const exitZero = opts.exitZero || fileConfig.exitZero === true;
+      if (!exitZero && total > 0) process.exit(1);
     } catch (err) {
       process.stderr.write(`sfcc-a11y: ${err.message}\n`);
       process.exit(2);

@@ -1,5 +1,5 @@
-import path from 'path';
-import { wcagMap } from 'eslint-plugin-sfcc-a11y';
+const path = require('path');
+const { wcagMap, wcagLevelMap } = require('eslint-plugin-sfcc-a11y');
 
 const SEVERITY = ['', 'warning', 'error'];
 
@@ -9,7 +9,7 @@ const SEVERITY = ['', 'warning', 'error'];
  * @param {import('eslint').ESLint.LintResult[]} results
  * @returns {string}
  */
-export function formatJson(results) {
+function formatJson(results) {
   const violations = [];
 
   for (const result of results) {
@@ -24,9 +24,12 @@ export function formatJson(results) {
         message: msg.message,
         rule,
         wcag: rule && wcagMap[rule] ? wcagMap[rule] : undefined,
+        wcagLevel: rule && wcagLevelMap[rule] ? wcagLevelMap[rule] : undefined,
       });
     }
   }
 
   return JSON.stringify(violations, null, 2) + '\n';
 }
+
+module.exports = { formatJson };

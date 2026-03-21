@@ -1,0 +1,4 @@
+{
+    "paths": ["../cartridges/app_storefront_base/templates/default/valid.isml"],
+    "format": "json"
+}

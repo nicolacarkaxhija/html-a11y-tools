@@ -1,5 +1,9 @@
+'use strict';
+
 /**
  * Programmatic API for sfcc-a11y.
  * Pass file paths, directory paths, or glob patterns.
  */
-export { lint } from './lib/linter.js';
+const { lint } = require('./lib/linter.js');
+
+module.exports = { lint };
