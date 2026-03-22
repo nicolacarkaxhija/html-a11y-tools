@@ -54,14 +54,21 @@ describe('wcagLevelMap', () => {
     expect(Object.keys(wcagLevelMap).length).toBe(Object.keys(rules).length);
   });
 
-  it('autocomplete-valid and heading-has-content are Level AA', () => {
+  it('autocomplete-valid, heading-has-content, and video-has-description are Level AA', () => {
     expect(wcagLevelMap['sfcc-a11y/autocomplete-valid']).toBe('AA');
     expect(wcagLevelMap['sfcc-a11y/heading-has-content']).toBe('AA');
+    expect(wcagLevelMap['sfcc-a11y/video-has-description']).toBe('AA');
   });
+
+  const AA_RULES = new Set([
+    'sfcc-a11y/autocomplete-valid',
+    'sfcc-a11y/heading-has-content',
+    'sfcc-a11y/video-has-description',
+  ]);
 
   it('all other rules are Level A', () => {
     for (const [key, level] of Object.entries(wcagLevelMap)) {
-      if (key !== 'sfcc-a11y/autocomplete-valid' && key !== 'sfcc-a11y/heading-has-content') {
+      if (!AA_RULES.has(key)) {
         expect(level).toBe('A');
       }
     }
@@ -76,6 +83,7 @@ describe('wcagLevelMap', () => {
 
 describe('buildRules()', () => {
   const totalRules = Object.keys(rules).length;
+  const aaRuleCount = Object.values(rules).filter((r) => r.meta?.docs?.level === 'AA').length;
 
   it('default (no args) returns all rules at warn', () => {
     const result = buildRules();
@@ -83,11 +91,12 @@ describe('buildRules()', () => {
     expect(Object.values(result).every((v) => v === 'warn')).toBe(true);
   });
 
-  it('level A returns 2 fewer rules than default', () => {
+  it('level A excludes all AA rules', () => {
     const result = buildRules({ level: 'A' });
-    expect(Object.keys(result).length).toBe(totalRules - 2);
+    expect(Object.keys(result).length).toBe(totalRules - aaRuleCount);
     expect(result['sfcc-a11y/autocomplete-valid']).toBeUndefined();
     expect(result['sfcc-a11y/heading-has-content']).toBeUndefined();
+    expect(result['sfcc-a11y/video-has-description']).toBeUndefined();
     expect(result['sfcc-a11y/img-alt']).toBe('warn');
   });
 
@@ -120,26 +129,29 @@ describe('buildRules()', () => {
 
 describe('level-A configs', () => {
   const totalRules = Object.keys(rules).length;
+  const aaRuleCount = Object.values(rules).filter((r) => r.meta?.docs?.level === 'AA').length;
 
   it('flat/recommended-a has 4 entries', () => {
     expect(plugin.configs['flat/recommended-a']).toHaveLength(4);
   });
 
-  it('flat/recommended-a virtual HTML entries have N-2 rules', () => {
+  it('flat/recommended-a virtual HTML entries exclude all AA rules', () => {
     const entry1 = plugin.configs['flat/recommended-a'][1];
     const entry3 = plugin.configs['flat/recommended-a'][3];
-    expect(Object.keys(entry1.rules).length).toBe(totalRules - 2);
-    expect(Object.keys(entry3.rules).length).toBe(totalRules - 2);
+    expect(Object.keys(entry1.rules).length).toBe(totalRules - aaRuleCount);
+    expect(Object.keys(entry3.rules).length).toBe(totalRules - aaRuleCount);
   });
 
   it('flat/recommended-a excludes AA rules', () => {
     const entry1 = plugin.configs['flat/recommended-a'][1];
     expect(entry1.rules['sfcc-a11y/autocomplete-valid']).toBeUndefined();
     expect(entry1.rules['sfcc-a11y/heading-has-content']).toBeUndefined();
+    expect(entry1.rules['sfcc-a11y/video-has-description']).toBeUndefined();
   });
 
-  it('recommended-a has N-2 rules at root level', () => {
-    expect(Object.keys(plugin.configs['recommended-a'].rules).length).toBe(totalRules - 2);
+  it('recommended-a excludes all AA rules', () => {
+    expect(Object.keys(plugin.configs['recommended-a'].rules).length).toBe(totalRules - aaRuleCount);
     expect(plugin.configs['recommended-a'].rules['sfcc-a11y/autocomplete-valid']).toBeUndefined();
+    expect(plugin.configs['recommended-a'].rules['sfcc-a11y/video-has-description']).toBeUndefined();
   });
 });

@@ -13,10 +13,12 @@ describe('buildRules()', () => {
   });
 
   it('level A excludes AA rules', () => {
+    const aaRuleCount = Object.values(rules).filter((r) => r.meta?.docs?.level === 'AA').length;
     const result = buildRules({ level: 'A' });
-    expect(Object.keys(result).length).toBe(totalRules - 2);
+    expect(Object.keys(result).length).toBe(totalRules - aaRuleCount);
     expect(result['html-a11y/autocomplete-valid']).toBeUndefined();
     expect(result['html-a11y/heading-has-content']).toBeUndefined();
+    expect(result['html-a11y/video-has-description']).toBeUndefined();
   });
 
   it('severity error sets all rules to error', () => {

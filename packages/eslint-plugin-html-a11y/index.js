@@ -3,6 +3,10 @@
 const htmlParser = require('@html-eslint/parser');
 
 const anchorIsValid = require('./lib/rules/anchor-is-valid.js');
+const audioHasTranscript = require('./lib/rules/audio-has-transcript.js');
+const fieldsetHasLegend = require('./lib/rules/fieldset-has-legend.js');
+const svgImgAlt = require('./lib/rules/svg-img-alt.js');
+const videoHasDescription = require('./lib/rules/video-has-description.js');
 const ariaHiddenOnFocusable = require('./lib/rules/aria-hidden-on-focusable.js');
 const ariaProps = require('./lib/rules/aria-props.js');
 const ariaProptypes = require('./lib/rules/aria-proptypes.js');
@@ -30,6 +34,7 @@ const tabindexNoPositive = require('./lib/rules/tabindex-no-positive.js');
 
 const rules = {
   'anchor-is-valid': anchorIsValid,
+  'audio-has-transcript': audioHasTranscript,
   'aria-hidden-on-focusable': ariaHiddenOnFocusable,
   'aria-props': ariaProps,
   'aria-proptypes': ariaProptypes,
@@ -53,7 +58,10 @@ const rules = {
   'object-alt': objectAlt,
   'role-supports-aria-props': roleSupportsAriaProps,
   'scope-attr-valid': scopeAttrValid,
+  'svg-img-alt': svgImgAlt,
   'tabindex-no-positive': tabindexNoPositive,
+  'video-has-description': videoHasDescription,
+  'fieldset-has-legend': fieldsetHasLegend,
 };
 
 /** Numeric order for WCAG conformance level comparison. */
