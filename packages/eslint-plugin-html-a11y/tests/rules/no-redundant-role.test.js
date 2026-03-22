@@ -16,6 +16,17 @@ describe('no-redundant-role', () => {
         { code: '<a role="link">not a real link</a>' },
         { code: '<input type="password" role="textbox">' },
         { code: '<input type="file" role="button">' },
+        // <header>/<footer> inside sectioning elements have role "generic", not banner/contentinfo
+        { code: '<article><header role="banner">title</header></article>' },
+        { code: '<article><footer role="contentinfo">end</footer></article>' },
+        { code: '<aside><header role="banner">h</header></aside>' },
+        { code: '<main><footer role="contentinfo">f</footer></main>' },
+        { code: '<nav><header role="banner">h</header></nav>' },
+        { code: '<section><footer role="contentinfo">f</footer></section>' },
+        // <section> without accessible name has role "generic", not "region"
+        { code: '<section role="region">content</section>' },
+        // <header>/<footer> at top level with non-redundant roles are fine
+        { code: '<header role="navigation">nav</header>' },
       ],
       invalid: [
         {
@@ -60,6 +71,28 @@ describe('no-redundant-role', () => {
         },
         {
           code: '<input type="range" role="slider">',
+          errors: [{ messageId: 'redundantRole' }],
+        },
+        // <header>/<footer> at top level
+        {
+          code: '<header role="banner">h</header>',
+          errors: [{ messageId: 'redundantRole' }],
+        },
+        {
+          code: '<footer role="contentinfo">f</footer>',
+          errors: [{ messageId: 'redundantRole' }],
+        },
+        // <section> with accessible name has implicit role "region"
+        {
+          code: '<section aria-label="Products" role="region">content</section>',
+          errors: [{ messageId: 'redundantRole' }],
+        },
+        {
+          code: '<section aria-labelledby="hd" role="region">content</section>',
+          errors: [{ messageId: 'redundantRole' }],
+        },
+        {
+          code: '<section title="Products" role="region">content</section>',
           errors: [{ messageId: 'redundantRole' }],
         },
       ],

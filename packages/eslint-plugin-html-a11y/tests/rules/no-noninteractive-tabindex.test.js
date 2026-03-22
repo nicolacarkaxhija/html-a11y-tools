@@ -21,6 +21,11 @@ describe('no-noninteractive-tabindex', () => {
         { code: '<div tabindex="__DYNAMIC__">x</div>' },
         { code: '<div tabindex>x</div>' },
         { code: '<div role="__DYNAMIC__" tabindex="0">x</div>' },
+        // composite widget roles legitimately need tabindex="0" per ARIA APG
+        { code: '<div role="tabpanel" tabindex="0">content</div>' },
+        { code: '<div role="grid" tabindex="0">grid</div>' },
+        { code: '<div role="tree" tabindex="0">tree</div>' },
+        { code: '<div role="treegrid" tabindex="0">tg</div>' },
       ],
       invalid: [
         {

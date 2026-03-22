@@ -107,10 +107,14 @@ describe('buildRules()', () => {
     expect(result['sfcc-a11y/img-alt']).toBe('off');
   });
 
-  it('per-rule override uses unprefixed names', () => {
-    const result = buildRules({ rules: { 'sfcc-a11y/img-alt': 'error' } });
-    // prefixed key has no effect — img-alt stays at default warn
-    expect(result['sfcc-a11y/img-alt']).toBe('warn');
+  it('throws when a prefixed rule key is passed', () => {
+    expect(() => buildRules({ rules: { 'sfcc-a11y/img-alt': 'error' } })).toThrow(
+      /must not include the plugin prefix/,
+    );
+  });
+
+  it('throws when an invalid level is passed', () => {
+    expect(() => buildRules({ level: 'INVALID' })).toThrow(/invalid level/);
   });
 });
 

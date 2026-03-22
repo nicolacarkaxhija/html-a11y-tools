@@ -14,6 +14,10 @@ describe('object-alt', () => {
         { code: '<object>A description of the embedded content</object>' },
         { code: '<object title="__DYNAMIC__"></object>' },
         { code: '<div></div>' },
+        // role="presentation" / role="none" marks the object as decorative
+        { code: '<object role="presentation"></object>' },
+        { code: '<object role="none"></object>' },
+        { code: '<object role="NONE"></object>' },
       ],
       invalid: [
         {

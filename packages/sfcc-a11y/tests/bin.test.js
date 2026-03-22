@@ -160,18 +160,11 @@ describe('bin/sfcc-a11y.js', () => {
   });
 
   it('exits 2 and writes to stderr on fatal error', () => {
-    const result = spawnSync(
-      process.execPath,
-      [
-        '-e',
-        `
-      process.stderr.write('sfcc-a11y: simulated error\\n');
-      process.exit(2);
-    `,
-      ],
-      { encoding: 'utf8' },
-    );
+    // Pass an invalid --level value to trigger buildRules() to throw inside the CLI's
+    // try/catch, which writes to stderr and exits with code 2.
+    const result = run([VALID_ISML, '--level', 'INVALID']);
     expect(result.status).toBe(2);
-    expect(result.stderr).toContain('simulated error');
+    expect(result.stderr).toContain('sfcc-a11y:');
+    expect(result.stderr).toContain('INVALID');
   });
 });
