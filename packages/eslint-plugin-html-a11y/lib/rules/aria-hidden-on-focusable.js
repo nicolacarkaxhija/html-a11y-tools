@@ -8,6 +8,9 @@
  * Exceptions:
  *  - <a> without href: not keyboard-reachable, so aria-hidden is harmless.
  *  - <input type="hidden">: removed from both tab order and the accessibility tree.
+ *  - Any element with tabindex="-1": explicitly removed from natural tab order,
+ *    so aria-hidden on a natively focusable element is acceptable (e.g. decorative
+ *    <object> or <iframe> with aria-hidden="true" tabindex="-1").
  *
  * WCAG 4.1.2 Name, Role, Value (Level A)
  *
@@ -46,8 +49,12 @@ module.exports = {
         const tabindex = getAttr(node, 'tabindex');
         if (tabindex && tabindex !== true && !isDynamicValue(tabindex, valueMarker)) {
           const idx = parseInt(tabindex, 10);
-          if (!isNaN(idx) && idx >= 0) {
-            context.report({ node, messageId: 'ariaHiddenOnFocusable' });
+          if (!isNaN(idx)) {
+            if (idx >= 0) {
+              context.report({ node, messageId: 'ariaHiddenOnFocusable' });
+            }
+            // idx < 0 (e.g. tabindex="-1"): element explicitly removed from tab order,
+            // aria-hidden is acceptable even on natively focusable elements.
             return;
           }
         }

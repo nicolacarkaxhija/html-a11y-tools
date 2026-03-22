@@ -46,8 +46,12 @@ const INTERACTIVE_ROLES = new Set([
 /**
  * Semantic HTML elements and their implicit ARIA roles, used by no-redundant-role.
  */
+// Note: <header>, <footer>, and <section> have context-dependent implicit roles:
+//   <header>/<footer> are 'banner'/'contentinfo' only when NOT inside a sectioning element.
+//   <section> is 'region' only when it has an accessible name.
+// These are handled as special cases in no-redundant-role.js and are intentionally
+// omitted from this map. Similarly, <a> is handled specially (role depends on href).
 const IMPLICIT_ROLES = new Map([
-  ['a', 'link'],
   ['article', 'article'],
   ['aside', 'complementary'],
   ['button', 'button'],
@@ -56,7 +60,6 @@ const IMPLICIT_ROLES = new Map([
   ['dialog', 'dialog'],
   ['fieldset', 'group'],
   ['figure', 'figure'],
-  ['footer', 'contentinfo'],
   ['form', 'form'],
   ['h1', 'heading'],
   ['h2', 'heading'],
@@ -64,11 +67,11 @@ const IMPLICIT_ROLES = new Map([
   ['h4', 'heading'],
   ['h5', 'heading'],
   ['h6', 'heading'],
-  ['header', 'banner'],
   ['hr', 'separator'],
   ['img', 'img'],
   ['input', 'textbox'],
   ['li', 'listitem'],
+  // <link> (the HTML element) has an implicit role of 'link', distinct from the <a> handling
   ['link', 'link'],
   ['main', 'main'],
   ['math', 'math'],
@@ -80,7 +83,6 @@ const IMPLICIT_ROLES = new Map([
   ['option', 'option'],
   ['output', 'status'],
   ['progress', 'progressbar'],
-  ['section', 'region'],
   ['select', 'combobox'],
   ['summary', 'button'],
   ['table', 'table'],

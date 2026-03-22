@@ -89,6 +89,7 @@ const VALID_TOKENS = new Set([
   'on',
   'off',
   'additional-name-initial',
+  'webauthn', // added in HTML Living Standard for passkey/WebAuthn credential type hints
 ]);
 
 const SECTION_PREFIX = /^section-\S+$/i;

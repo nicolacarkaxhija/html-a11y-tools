@@ -35,6 +35,13 @@ module.exports = {
       Tag(node) {
         if (node.name.toLowerCase() !== 'object') return;
 
+        // role="presentation" or role="none" marks the element as decorative — no label required
+        const role = getAttr(node, 'role');
+        if (role && role !== true && !isDynamicValue(role, valueMarker)) {
+          const r = role.trim().toLowerCase();
+          if (r === 'presentation' || r === 'none') return;
+        }
+
         if (hasAriaLabel(node)) return;
 
         const title = getAttr(node, 'title');

@@ -48,9 +48,12 @@ module.exports = {
         if (isNativelyFocusable(node.name.toLowerCase())) return;
 
         const tabindex = getAttr(node, 'tabindex');
-        // Any tabindex value (including -1) makes the element programmatically focusable
-        if (tabindex !== undefined && isDynamicValue(tabindex !== true ? tabindex : '', valueMarker)) return;
-        if (tabindex !== undefined) return;
+        // Any tabindex value (including -1) makes the element programmatically focusable.
+        // Skip dynamic values (can't statically determine the effective index).
+        if (tabindex !== undefined) {
+          if (tabindex !== true && isDynamicValue(tabindex, valueMarker)) return;
+          return;
+        }
 
         context.report({
           node,

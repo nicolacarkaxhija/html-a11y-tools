@@ -11,13 +11,37 @@
  *   <a href="..."> → "link"; <a> (no href) → "generic" (role="link" is NOT redundant)
  *   <input type="checkbox"> → "checkbox"; <input type="text"> → "textbox"; etc.
  *
- * WCAG 4.1.2 Name, Role, Value (Level AA — best practice)
+ * WCAG 4.1.2 Name, Role, Value (Level A)
  *
  * Inspired by: eslint-plugin-jsx-a11y/no-redundant-roles
  */
 
 const { getAttr, getImplicitRole } = require('../utils/dom.js');
 const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
+
+/**
+ * Sectioning content elements that remove the landmark role from
+ * <header> and <footer> when those elements are nested inside them.
+ * Per HTML-AAM: <header>/<footer> have banner/contentinfo roles only
+ * when NOT a descendant of article, aside, main, nav, or section.
+ */
+const SECTIONING_ELEMENTS = new Set(['article', 'aside', 'main', 'nav', 'section']);
+
+/**
+ * Returns true if the given node is nested inside a sectioning element.
+ * @param {{ parent?: object, type?: string, name?: string }} node
+ * @returns {boolean}
+ */
+function isInsideSectioning(node) {
+  let current = node.parent;
+  while (current) {
+    if (current.type === 'Tag' && SECTIONING_ELEMENTS.has(current.name.toLowerCase())) {
+      return true;
+    }
+    current = current.parent;
+  }
+  return false;
+}
 
 /**
  * Maps <input type> to its implicit ARIA role.
@@ -76,6 +100,22 @@ module.exports = {
           const type = (getAttr(node, 'type') ?? 'text').toLowerCase();
           implicitRole = INPUT_TYPE_ROLES.get(type);
           if (!implicitRole) return;
+        } else if (tagName === 'header') {
+          // <header> is 'banner' only at the top level; inside a sectioning element it is 'generic'
+          if (isInsideSectioning(node)) return;
+          implicitRole = 'banner';
+        } else if (tagName === 'footer') {
+          // <footer> is 'contentinfo' only at the top level; inside a sectioning element it is 'generic'
+          if (isInsideSectioning(node)) return;
+          implicitRole = 'contentinfo';
+        } else if (tagName === 'section') {
+          // <section> is 'region' only when it has an accessible name; otherwise it is 'generic'
+          const hasName =
+            (getAttr(node, 'aria-label') && getAttr(node, 'aria-label') !== true) ||
+            (getAttr(node, 'aria-labelledby') && getAttr(node, 'aria-labelledby') !== true) ||
+            (getAttr(node, 'title') && getAttr(node, 'title') !== true);
+          if (!hasName) return;
+          implicitRole = 'region';
         } else {
           implicitRole = getImplicitRole(tagName);
           if (!implicitRole) return;

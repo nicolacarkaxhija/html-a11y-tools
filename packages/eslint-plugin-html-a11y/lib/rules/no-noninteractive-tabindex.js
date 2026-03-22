@@ -16,6 +16,14 @@
 const { getAttr, isInteractiveRole, isNativelyFocusable } = require('../utils/dom.js');
 const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
+/**
+ * Composite widget roles that legitimately require tabindex="0" per the ARIA
+ * Authoring Practices Guide. These are non-interactive container roles that
+ * need to receive focus as part of a keyboard navigation pattern (e.g. a
+ * <div role="tabpanel" tabindex="0"> must be focusable when its tab is activated).
+ */
+const COMPOSITE_WIDGET_ROLES = new Set(['grid', 'tabpanel', 'tree', 'treegrid']);
+
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
   meta: {
@@ -52,6 +60,8 @@ module.exports = {
           if (isDynamicValue(role, valueMarker)) return;
           const firstRole = role.trim().split(/\s+/)[0];
           if (isInteractiveRole(firstRole)) return;
+          // Composite widget roles need tabindex="0" to receive focus per ARIA APG
+          if (COMPOSITE_WIDGET_ROLES.has(firstRole)) return;
         }
 
         context.report({ node, messageId: 'noninteractiveTabindex' });
