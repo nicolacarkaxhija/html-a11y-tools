@@ -14,6 +14,7 @@ describe('media-has-caption', () => {
         { code: '<audio><source src="a.mp3"></audio>' },
         { code: '<img src="x.jpg" alt="photo">' },
         { code: '<video><track kind="__DYNAMIC__" src="en.vtt"></video>' },
+        { code: '<video aria-hidden="true"><source src="v.mp4"></video>' },
       ],
       invalid: [
         {

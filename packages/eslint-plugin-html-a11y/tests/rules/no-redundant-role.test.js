@@ -25,6 +25,10 @@ describe('no-redundant-role', () => {
         { code: '<section><footer role="contentinfo">f</footer></section>' },
         // <section> without accessible name has role "generic", not "region"
         { code: '<section role="region">content</section>' },
+        // <section> with dynamic aria-label — cannot determine name statically, skip
+        { code: '<section aria-label="__DYNAMIC__" role="region">content</section>' },
+        { code: '<section aria-labelledby="__DYNAMIC__" role="region">content</section>' },
+        { code: '<section title="__DYNAMIC__" role="region">content</section>' },
         // <header>/<footer> at top level with non-redundant roles are fine
         { code: '<header role="navigation">nav</header>' },
       ],

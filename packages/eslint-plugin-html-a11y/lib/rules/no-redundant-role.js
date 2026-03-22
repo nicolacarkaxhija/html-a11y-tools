@@ -110,10 +110,13 @@ module.exports = {
           implicitRole = 'contentinfo';
         } else if (tagName === 'section') {
           // <section> is 'region' only when it has an accessible name; otherwise it is 'generic'
+          const ariaLabel = getAttr(node, 'aria-label');
+          const ariaLabelledby = getAttr(node, 'aria-labelledby');
+          const titleAttr = getAttr(node, 'title');
           const hasName =
-            (getAttr(node, 'aria-label') && getAttr(node, 'aria-label') !== true) ||
-            (getAttr(node, 'aria-labelledby') && getAttr(node, 'aria-labelledby') !== true) ||
-            (getAttr(node, 'title') && getAttr(node, 'title') !== true);
+            (ariaLabel && ariaLabel !== true && !isDynamicValue(ariaLabel, valueMarker)) ||
+            (ariaLabelledby && ariaLabelledby !== true && !isDynamicValue(ariaLabelledby, valueMarker)) ||
+            (titleAttr && titleAttr !== true && !isDynamicValue(titleAttr, valueMarker));
           if (!hasName) return;
           implicitRole = 'region';
         } else {

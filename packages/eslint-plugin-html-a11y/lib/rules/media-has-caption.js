@@ -12,7 +12,7 @@
  * Inspired by: eslint-plugin-jsx-a11y/media-has-caption
  */
 
-const { getAttr } = require('../utils/dom.js');
+const { getAttr, isAriaHidden } = require('../utils/dom.js');
 const { getMarkers, isDynamicValue } = require('../utils/dynamic.js');
 
 /** @type {import('eslint').Rule.RuleModule} */
@@ -37,6 +37,9 @@ module.exports = {
     return {
       Tag(node) {
         if (node.name.toLowerCase() !== 'video') return;
+
+        // Hidden from AT — captions not required
+        if (isAriaHidden(node)) return;
 
         // Muted videos have no audio — captions not required
         if (getAttr(node, 'muted') !== undefined) return;
