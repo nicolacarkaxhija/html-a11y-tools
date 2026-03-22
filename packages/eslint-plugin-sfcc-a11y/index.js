@@ -54,9 +54,20 @@ const LEVEL_ORDER = { A: 1, AA: 2, AAA: 3 };
  * @returns {Record<string,string|number>}
  */
 function buildRules(config = {}) {
+  if (config.level !== undefined && !(config.level in LEVEL_ORDER)) {
+    throw new Error(
+      `buildRules(): invalid level "${config.level}". Must be one of: A, AA, AAA.`,
+    );
+  }
+  const overrides = config.rules ?? {};
+  const prefixed = Object.keys(overrides).find((k) => k.startsWith('sfcc-a11y/'));
+  if (prefixed) {
+    throw new Error(
+      `buildRules(): rule names must not include the plugin prefix. Use "${prefixed.replace('sfcc-a11y/', '')}" instead of "${prefixed}".`,
+    );
+  }
   const maxLevel = LEVEL_ORDER[config.level] ?? LEVEL_ORDER['AA'];
   const globalSeverity = config.severity ?? 'warn';
-  const overrides = config.rules ?? {};
   const result = {};
   for (const [name, rule] of Object.entries(rules)) {
     const ruleLevel = rule.meta?.docs?.level;

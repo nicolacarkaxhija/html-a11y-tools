@@ -37,8 +37,12 @@ function expandPaths(paths) {
 async function lint(rawPatterns, config = {}) {
   const patterns = expandPaths(rawPatterns);
   const dynamicRules = buildRules(config);
+  // Replace rules only in linting entries (those with both rules + languageOptions).
+  // Processor-only entries ([0] and [2]) have neither, so they pass through unchanged.
   const overrideConfig = plugin.configs['flat/recommended']
-    .map((entry) => (entry.rules ? { ...entry, rules: dynamicRules } : entry));
+    .map((entry) =>
+      entry.rules && entry.languageOptions ? { ...entry, rules: dynamicRules } : entry,
+    );
 
   const eslint = new ESLint({
     overrideConfigFile: true, // use ONLY overrideConfig; ignore any project eslint.config.js

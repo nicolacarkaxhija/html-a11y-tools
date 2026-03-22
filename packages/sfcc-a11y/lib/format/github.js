@@ -5,6 +5,11 @@ const { wcagMap } = require('eslint-plugin-sfcc-a11y');
  * Formats ESLint results as GitHub Actions workflow commands.
  * @see https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#setting-a-warning-message
  *
+ * Annotation parameter names used here:
+ *   col       — start column (GitHub docs key, NOT "column")
+ *   endLine   — end line
+ *   endColumn — end column (GitHub docs key; older runner versions also accepted "end_column")
+ *
  * @param {import('eslint').ESLint.LintResult[]} results
  * @returns {string}
  */

@@ -18,6 +18,15 @@
  * original XML file, not the start of the extracted snippet.
  */
 
+// Module-level state: maps each XML filename to its extracted block metadata so
+// postprocess() can look up line offsets by filename.
+//
+// CONCURRENCY NOTE: ESLint v9 runs file processing serially within a single
+// process (no worker threads by default), so this module-level map is safe.
+// If ESLint ever adopts parallel workers, each worker gets its own module instance
+// and its own map — this is still safe. The only unsafe case would be sharing
+// a single module instance across concurrent async preprocess/postprocess calls
+// for different files, which the current ESLint architecture does not do.
 /** @type {Map<string, Array<{ startLine: number, virtualBlock: { text: string, filename: string } }>>} */
 const fileBlocksMap = new Map();
 
@@ -45,6 +54,7 @@ function decodeXmlEntities(str) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
+    /* c8 ignore next 2 -- v8 phantom: method chain tail always runs when decodeXmlEntities is called */
     .replace(/&amp;/g, '&');
 }
 
@@ -86,8 +96,13 @@ function preprocess(text, filename) {
       startLine = lineOf(text, cdataOffset);
     } else {
       // Entity-encoded format: startLine = line of <custom-attribute> opening tag.
-      // Decoded content begins with \r\n (from &#13;\n at line end), so block
-      // line 1 is blank (CR only) and block line 2 maps to startLine + 1 in the XML.
+      // Standard Business Manager exports encode the body value inline on the same
+      // line as the opening tag, so the first HTML character in the decoded content
+      // is on startLine. The lineOf() function counts only '\n' characters, so any
+      // leading '\r' (from &#13;) in the decoded content does not advance the line
+      // count and does not affect offset accuracy. If the BM export format changes
+      // (e.g. the tag and content appear on separate lines), this offset may be off
+      // by one and will need updating.
       htmlContent = decodeXmlEntities(rawContent);
       startLine = lineOf(text, match.index);
     }

@@ -58,6 +58,8 @@ program
       const lintConfig = {
         level: opts.level,
         severity: opts.severity,
+        // Per-rule overrides come from the config file only — there is no CLI equivalent.
+        // Use .sfcc-a11yrc.json "rules": { "img-alt": "error", "html-has-lang": "off" }
         rules: fileConfig.rules,
       };
       const results = await lint(patterns, lintConfig);

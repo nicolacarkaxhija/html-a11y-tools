@@ -66,7 +66,7 @@ function sanitize(source) {
   result = result.replace(/\{\{[#^/>!][^}]*?\}\}/g, (m) => m.replace(/[^\n]/g, ' '));
   result = result.replace(/\{\{[^}]*?\}\}/g, CONTENT_SENTINEL);
 
-  // Step 5 — Replace all remaining <is*> tags (standalone or embedded in
+  // Step 4 — Replace all remaining <is*> tags (standalone or embedded in
   // attribute values) with spaces of the same length.
   // Non-newline characters become spaces; newlines are kept so line count is
   // preserved even when an ISML tag spans multiple lines.

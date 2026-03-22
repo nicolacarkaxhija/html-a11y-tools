@@ -7,6 +7,10 @@
  *
  * WCAG 3.1.1 Language of Page (Level A)
  *
+ * Note: this rule only checks that lang is present and non-empty.
+ * Use the companion rule `lang-value` to also validate that the value
+ * is a well-formed BCP 47 language tag.
+ *
  * Inspired by: eslint-plugin-jsx-a11y/html-has-lang
  */
 

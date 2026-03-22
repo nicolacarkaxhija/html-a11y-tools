@@ -6,6 +6,9 @@
  *
  * WCAG 3.1.1 Language of Page (Level A)
  *
+ * Note: this rule validates the tag format but does not check for a missing lang
+ * attribute. Use the companion rule `html-has-lang` to ensure lang is present.
+ *
  * Inspired by: eslint-plugin-jsx-a11y/lang
  */
 
