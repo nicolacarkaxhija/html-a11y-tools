@@ -9,6 +9,9 @@ const { lint } = require('../lib/linter.js');
 const { formatText } = require('../lib/format/text.js');
 const { formatJson } = require('../lib/format/json.js');
 const { formatGithub } = require('../lib/format/github.js');
+const { formatJunit } = require('../lib/format/junit.js');
+const { formatSarif } = require('../lib/format/sarif.js');
+const { formatCheckstyle } = require('../lib/format/checkstyle.js');
 
 /**
  * Load config from the first source found (cosmiconfig-style):
@@ -48,7 +51,7 @@ program
   .description('Zero-config WCAG accessibility checker for SFCC ISML and XML files')
   .version(require('../package.json').version)
   .argument('[paths...]', 'Files, directories, or globs to check (default: cwd)')
-  .option('-f, --format <format>', 'Output format: text, json, github', defaultFormat)
+  .option('-f, --format <format>', 'Output format: text, json, github, junit, sarif, checkstyle', defaultFormat)
   .option('--level <level>', 'WCAG conformance level ceiling: A, AA, AAA', defaultLevel)
   .option('--severity <severity>', 'Rule severity: warn, error', defaultSeverity)
   .option('--exit-zero', 'Always exit with code 0, even when violations are found')
@@ -70,6 +73,12 @@ program
         output = formatJson(results);
       } else if (opts.format === 'github') {
         output = formatGithub(results);
+      } else if (opts.format === 'junit') {
+        output = formatJunit(results);
+      } else if (opts.format === 'sarif') {
+        output = formatSarif(results);
+      } else if (opts.format === 'checkstyle') {
+        output = formatCheckstyle(results);
       } else {
         output = formatText(results);
       }
