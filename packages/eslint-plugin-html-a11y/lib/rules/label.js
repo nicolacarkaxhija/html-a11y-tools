@@ -85,10 +85,8 @@ module.exports = {
             if (EXEMPT_INPUT_TYPES.has(type)) continue;
           }
 
-          const ariaLabelAttr = node.attributes?.find(
-            (a) => a.key?.value?.toLowerCase() === 'aria-label',
-          );
-          if (ariaLabelAttr?.value && isDynamicValue(ariaLabelAttr.value.value, valueMarker)) continue;
+          const ariaLabelVal = getAttr(node, 'aria-label');
+          if (ariaLabelVal && ariaLabelVal !== true && isDynamicValue(ariaLabelVal, valueMarker)) continue;
           if (hasAriaLabel(node)) continue;
 
           // Dynamic id — cannot validate for/id association; skip

@@ -5,7 +5,7 @@
  * the natural document tab order, creating a confusing experience for keyboard
  * and assistive technology users.
  *
- * WCAG 2.4.3 Focus Order (Level AA)
+ * WCAG 2.4.3 Focus Order (Level A)
  *
  * Inspired by: eslint-plugin-jsx-a11y/tabindex-no-positive
  */
