@@ -1,59 +1,83 @@
 # html-a11y-tools
 
-Monorepo for WCAG accessibility linting tools targeting HTML template ecosystems.
+[![CI](https://github.com/nicolacarkaxhija/html-a11y-tools/actions/workflows/ci.yml/badge.svg)](https://github.com/nicolacarkaxhija/html-a11y-tools/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
+
+Monorepo for WCAG 2.2 accessibility linting tools targeting HTML template ecosystems.
 
 ## Packages
 
 | Package | Version | Description |
 |---|---|---|
-| [`eslint-plugin-html-a11y`](packages/eslint-plugin-html-a11y) | 0.1.0 | 25 WCAG accessibility rules for any `@html-eslint/parser` project |
-| [`eslint-plugin-sfcc-a11y`](packages/eslint-plugin-sfcc-a11y) | 2.0.0 | SFCC adapter — adds ISML sanitizer and XML content-asset processor |
-| [`sfcc-a11y`](packages/sfcc-a11y) | 1.0.0-alpha.0 | Zero-config CLI for SFCC ISML and XML accessibility checks |
+| [`eslint-plugin-html-a11y`](packages/eslint-plugin-html-a11y) | [![npm](https://img.shields.io/npm/v/eslint-plugin-html-a11y)](https://www.npmjs.com/package/eslint-plugin-html-a11y) | 25 WCAG Level A/AA rules for any template language `@html-eslint/parser` can parse |
+| [`eslint-plugin-sfcc-a11y`](packages/eslint-plugin-sfcc-a11y) | [![npm](https://img.shields.io/npm/v/eslint-plugin-sfcc-a11y)](https://www.npmjs.com/package/eslint-plugin-sfcc-a11y) | SFCC adapter: adds ISML sanitizer and XML content-asset processor |
+| [`sfcc-a11y`](packages/sfcc-a11y) | [![npm](https://img.shields.io/npm/v/sfcc-a11y)](https://www.npmjs.com/package/sfcc-a11y) | Zero-config CLI for SFCC ISML and XML accessibility audits |
 
-## Motivation
+## Introduction
 
-`@html-eslint/eslint-plugin` has no accessibility rules. `eslint-plugin-jsx-a11y` is JSX-only. Template ecosystems (Jinja2, Handlebars, Django, SFCC ISML) are underserved.
+Most accessibility linters target a single framework, such as React (`eslint-plugin-jsx-a11y`), Vue (`eslint-plugin-vuejs-accessibility`), and so on. Plain HTML templates and non-mainstream template languages are left without tooling, even though the underlying WCAG 2.2 rules are fully framework-agnostic.
 
-`eslint-plugin-html-a11y` fills that gap with 25 WCAG Level A/AA rules that work with `@html-eslint/parser`. `eslint-plugin-sfcc-a11y` extends it with SFCC-specific pre-processing. `sfcc-a11y` wraps everything in a zero-config CLI.
+`eslint-plugin-html-a11y` fills that gap: 25 WCAG Level A/AA rules that work with any language `@html-eslint/parser` can parse: plain HTML, Jinja2, Handlebars, Twig, Django templates, Nunjucks, and so on. The plugin is designed to be extended into template-specific adapters: each adapter provides a preprocessor that neutralises template syntax before the parser runs, then inherits the full rule set without reimplementing it.
 
-## Repository structure
+`eslint-plugin-sfcc-a11y` is the first such adapter, adding an ISML sanitizer and an XML content-asset processor. `sfcc-a11y` wraps both in a zero-config CLI.
+
+## Architecture
+
+```
+eslint-plugin-html-a11y                 25 WCAG rules, parser integration, extension API
+        │
+        └── eslint-plugin-sfcc-a11y     re-exports all rules under sfcc-a11y/ prefix
+                │                        adds ISML sanitizer + XML processor
+                │
+                └── sfcc-a11y           zero-config CLI wrapper, multiple output formats
+```
+
+Adapter packages consume `buildRulesFor(prefix, rulesMap, config)` from `eslint-plugin-html-a11y` to produce correctly-namespaced rule objects without duplicating the filtering or severity logic.
+
+## Repository layout
 
 ```
 packages/
-  eslint-plugin-html-a11y/   # General-purpose ESLint plugin (25 rules)
-  eslint-plugin-sfcc-a11y/   # SFCC adapter (re-exports rules + ISML/XML processors)
+  eslint-plugin-html-a11y/   # Core plugin — rules, parser config, extension API
+  eslint-plugin-sfcc-a11y/   # SFCC adapter — ISML sanitizer, XML processor
   sfcc-a11y/                 # Zero-config CLI
 docs/
   functional-specs.md        # Product requirements and rule catalogue
   technical-specs.md         # Architecture and implementation details
+.changeset/                  # Pending release changesets (managed by Changesets)
+.github/workflows/
+  ci.yml                     # Test matrix (Node 18/20/22), PR title check, changeset guard
+  release.yml                # changesets/action — opens version PRs or publishes to npm
 ```
 
-## Development
+## Adding a rule
 
-```sh
-npm install              # install all workspace deps
-npm test                 # run all tests
-npm run test:coverage    # run with 100% coverage check
-npm run lint             # ESLint across all packages
-npm run format           # Prettier
-```
+Rules live in `eslint-plugin-html-a11y`. SFCC and the CLI pick them up automatically.
 
-### Adding a rule
-
-1. Create `packages/eslint-plugin-html-a11y/lib/rules/<rule-name>.js`
+1. Create `packages/eslint-plugin-html-a11y/lib/rules/<rule-name>.js` with `meta.docs.wcag` and `meta.docs.level` set
 2. Add tests in `packages/eslint-plugin-html-a11y/tests/rules/<rule-name>.test.js`
-3. Register in `packages/eslint-plugin-html-a11y/index.js`
-4. Add `meta.docs.wcag` — the `wcagMap` in `eslint-plugin-sfcc-a11y` is computed automatically
+3. Register the rule in `packages/eslint-plugin-html-a11y/index.js` — it is automatically included in `recommended`, `flat/recommended`, and all SFCC configs
 
-### Releases
+## Adding a new template adapter
 
-Managed with [Changesets](https://github.com/changesets/changesets):
+1. Create a new package under `packages/`
+2. Add it to the `workspaces` array in the root `package.json`
+3. Depend on `eslint-plugin-html-a11y`
+4. Write a preprocessor that strips or neutralises template-specific syntax, then register sentinel values in the plugin settings so rules know to skip dynamic values
+5. Use `buildRulesFor(yourPrefix, htmlA11y.rules, config)` to produce the correctly-namespaced recommended rules
+
+## Releases
+
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Every PR that changes package behaviour must include a changeset file (enforced by CI).
 
 ```sh
-npm run changeset   # document what changed
-npm run version     # bump versions
-npm run release     # publish to npm
+npm run changeset   # describe what changed and which packages are affected
+npm run version     # apply version bumps and update CHANGELOG files
+npm run release     # publish changed packages to npm
 ```
+
+In practice the `version` and `release` steps run automatically via the GitHub Actions release workflow: merging to `main` either opens a "Version Packages" PR (if changesets are pending) or publishes directly (if that PR is what was merged).
 
 ## Documentation
 
@@ -62,4 +86,4 @@ npm run release     # publish to npm
 
 ## License
 
-MIT
+MIT © [Nicola Carkaxhija](https://github.com/nicolacarkaxhija)
