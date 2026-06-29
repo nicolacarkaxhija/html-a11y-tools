@@ -68,39 +68,46 @@ const rules = {
 const LEVEL_ORDER = { A: 1, AA: 2, AAA: 3 };
 
 /**
- * Build an ESLint rules object filtered by WCAG level with optional severity overrides.
+ * Core rule-builder shared by both html-a11y and sfcc-a11y plugins.
+ * Validates config, filters rules by WCAG level, and applies severity — all under
+ * the given prefix so each plugin produces correctly-namespaced rule keys.
  *
+ * @param {string} prefix  Plugin prefix, e.g. 'html-a11y' or 'sfcc-a11y'
+ * @param {object} rulesMap  Plain object of ESLint rule definitions keyed by short name
  * @param {object} [config]
- * @param {'A'|'AA'|'AAA'} [config.level='AA'] Ceiling level — rules at or below this level are included.
- * @param {'warn'|'error'} [config.severity='warn'] Global severity for all included rules.
- * @param {Record<string,string|number>} [config.rules={}] Per-rule overrides using UNPREFIXED names,
- *   e.g. `{ 'img-alt': 'error', 'html-has-lang': 'off' }`. Overrides the global severity.
+ * @param {'A'|'AA'|'AAA'} [config.level='AA']
+ * @param {'warn'|'error'} [config.severity='warn']
+ * @param {Record<string,string|number>} [config.rules={}]
  * @returns {Record<string,string|number>}
  */
-function buildRules(config = {}) {
+function buildRulesFor(prefix, rulesMap, config = {}) {
   if (config.level !== undefined && !(config.level in LEVEL_ORDER)) {
     throw new Error(
       `buildRules(): invalid level "${config.level}". Must be one of: A, AA, AAA.`,
     );
   }
   const overrides = config.rules ?? {};
-  const prefixed = Object.keys(overrides).find((k) => k.startsWith('html-a11y/'));
+  const prefixed = Object.keys(overrides).find((k) => k.startsWith(`${prefix}/`));
   if (prefixed) {
     throw new Error(
-      `buildRules(): rule names must not include the plugin prefix. Use "${prefixed.replace('html-a11y/', '')}" instead of "${prefixed}".`,
+      `buildRules(): rule names must not include the plugin prefix. Use "${prefixed.replace(`${prefix}/`, '')}" instead of "${prefixed}".`,
     );
   }
   const maxLevel = LEVEL_ORDER[config.level] ?? LEVEL_ORDER['AA'];
   const globalSeverity = config.severity ?? 'warn';
   const result = {};
-  for (const [name, rule] of Object.entries(rules)) {
+  for (const [name, rule] of Object.entries(rulesMap)) {
     const ruleLevel = rule.meta?.docs?.level;
     /* c8 ignore next -- defensive fallback; all registered rules have level set */
     const levelNum = LEVEL_ORDER[ruleLevel] ?? 1;
     if (levelNum > maxLevel) continue;
-    result[`html-a11y/${name}`] = overrides[name] ?? globalSeverity;
+    result[`${prefix}/${name}`] = overrides[name] ?? globalSeverity;
   }
   return result;
+}
+
+function buildRules(config = {}) {
+  return buildRulesFor('html-a11y', rules, config);
 }
 
 const recommendedRules = buildRules();
@@ -120,3 +127,4 @@ plugin.configs = {
 
 module.exports = plugin;
 module.exports.buildRules = buildRules;
+module.exports.buildRulesFor = buildRulesFor;
