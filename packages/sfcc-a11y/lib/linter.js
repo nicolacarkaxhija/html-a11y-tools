@@ -3,7 +3,7 @@
 const fs = require('fs');
 const { ESLint } = require('eslint');
 const plugin = require('eslint-plugin-sfcc-a11y');
-const { buildRules } = require('eslint-plugin-sfcc-a11y');
+const { buildRules } = plugin;
 
 const ISML_GLOB = '**/*.isml';
 const XML_GLOB = '**/libraries/**/*.xml';
