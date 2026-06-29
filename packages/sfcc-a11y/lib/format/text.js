@@ -1,5 +1,5 @@
-const path = require('path');
 const { wcagMap } = require('eslint-plugin-sfcc-a11y');
+const { relPath } = require('./utils.js');
 
 const SEVERITY = ['', 'warning', 'error'];
 
@@ -17,8 +17,8 @@ function formatText(results) {
   for (const result of results) {
     if (result.messages.length === 0) continue;
 
-    const relPath = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
-    output += `\n${relPath}\n`;
+    const rel = relPath(result.filePath);
+    output += `\n${rel}\n`;
 
     for (const msg of result.messages) {
       const severity = SEVERITY[msg.severity] ?? 'warning';

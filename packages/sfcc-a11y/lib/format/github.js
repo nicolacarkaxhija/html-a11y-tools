@@ -1,5 +1,5 @@
-const path = require('path');
 const { wcagMap } = require('eslint-plugin-sfcc-a11y');
+const { relPath } = require('./utils.js');
 
 /**
  * Formats ESLint results as GitHub Actions workflow commands.
@@ -17,7 +17,7 @@ function formatGithub(results) {
   let output = '';
 
   for (const result of results) {
-    const file = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
+    const file = relPath(result.filePath);
     for (const msg of result.messages) {
       const level = msg.severity === 2 ? 'error' : 'warning';
       const rule = msg.ruleId ?? '';
