@@ -19,6 +19,7 @@ const { EXPR_SENTINEL, CONTENT_SENTINEL } = require('./lib/utils/isml.js');
 
 /** All WCAG rules, re-exported verbatim from html-a11y. */
 const rules = htmlA11y.rules;
+const { buildRulesFor } = htmlA11y;
 
 /**
  * Machine-readable WCAG map computed from rule meta.
@@ -40,43 +41,8 @@ const wcagLevelMap = Object.fromEntries(
     .map(([name, r]) => [`sfcc-a11y/${name}`, r.meta.docs.level]),
 );
 
-/** Numeric order for level comparison. */
-const LEVEL_ORDER = { A: 1, AA: 2, AAA: 3 };
-
-/**
- * Build an ESLint rules object filtered by WCAG level with optional severity overrides.
- *
- * @param {object} [config]
- * @param {'A'|'AA'|'AAA'} [config.level='AA'] Ceiling level — rules at or below this level are included.
- * @param {'warn'|'error'} [config.severity='warn'] Global severity for all included rules.
- * @param {Record<string,string|number>} [config.rules={}] Per-rule overrides using UNPREFIXED names,
- *   e.g. `{ 'img-alt': 'error', 'html-has-lang': 'off' }`. Overrides the global severity.
- * @returns {Record<string,string|number>}
- */
 function buildRules(config = {}) {
-  if (config.level !== undefined && !(config.level in LEVEL_ORDER)) {
-    throw new Error(
-      `buildRules(): invalid level "${config.level}". Must be one of: A, AA, AAA.`,
-    );
-  }
-  const overrides = config.rules ?? {};
-  const prefixed = Object.keys(overrides).find((k) => k.startsWith('sfcc-a11y/'));
-  if (prefixed) {
-    throw new Error(
-      `buildRules(): rule names must not include the plugin prefix. Use "${prefixed.replace('sfcc-a11y/', '')}" instead of "${prefixed}".`,
-    );
-  }
-  const maxLevel = LEVEL_ORDER[config.level] ?? LEVEL_ORDER['AA'];
-  const globalSeverity = config.severity ?? 'warn';
-  const result = {};
-  for (const [name, rule] of Object.entries(rules)) {
-    const ruleLevel = rule.meta?.docs?.level;
-    /* c8 ignore next -- defensive fallback; all registered rules have level set */
-    const levelNum = LEVEL_ORDER[ruleLevel] ?? 1;
-    if (levelNum > maxLevel) continue;
-    result[`sfcc-a11y/${name}`] = overrides[name] ?? globalSeverity;
-  }
-  return result;
+  return buildRulesFor('sfcc-a11y', rules, config);
 }
 
 /** All recommended rules (Level A + AA) at "warn" severity. */
@@ -171,6 +137,15 @@ plugin.configs['flat/recommended-a'] = plugin.configs['flat/recommended']
 plugin.configs['recommended-a'] = {
   ...plugin.configs.recommended,
   rules: levelARules,
+};
+
+// Error-severity configs: same rules at "error" instead of "warn"
+const recommendedErrorRules = buildRules({ severity: 'error' });
+plugin.configs['flat/recommended-error'] = plugin.configs['flat/recommended']
+  .map((entry) => (entry.rules ? { ...entry, rules: recommendedErrorRules } : entry));
+plugin.configs['recommended-error'] = {
+  ...plugin.configs.recommended,
+  rules: recommendedErrorRules,
 };
 
 module.exports = plugin;
