@@ -68,20 +68,14 @@ program
       const results = await lint(patterns, lintConfig);
       const total = results.reduce((sum, r) => sum + r.errorCount + r.warningCount, 0);
 
-      let output;
-      if (opts.format === 'json') {
-        output = formatJson(results);
-      } else if (opts.format === 'github') {
-        output = formatGithub(results);
-      } else if (opts.format === 'junit') {
-        output = formatJunit(results);
-      } else if (opts.format === 'sarif') {
-        output = formatSarif(results);
-      } else if (opts.format === 'checkstyle') {
-        output = formatCheckstyle(results);
-      } else {
-        output = formatText(results);
-      }
+      const FORMATS = {
+        json: formatJson,
+        github: formatGithub,
+        junit: formatJunit,
+        sarif: formatSarif,
+        checkstyle: formatCheckstyle,
+      };
+      const output = (FORMATS[opts.format] ?? formatText)(results);
 
       process.stdout.write(output);
 
