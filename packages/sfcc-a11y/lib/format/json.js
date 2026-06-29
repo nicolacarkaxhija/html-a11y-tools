@@ -1,5 +1,5 @@
-const path = require('path');
 const { wcagMap, wcagLevelMap } = require('eslint-plugin-sfcc-a11y');
+const { relPath } = require('./utils.js');
 
 const SEVERITY = ['', 'warning', 'error'];
 
@@ -13,7 +13,7 @@ function formatJson(results) {
   const violations = [];
 
   for (const result of results) {
-    const file = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
+    const file = relPath(result.filePath);
     for (const msg of result.messages) {
       const rule = msg.ruleId ?? '';
       violations.push({

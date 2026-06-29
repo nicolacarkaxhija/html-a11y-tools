@@ -1,16 +1,7 @@
 'use strict';
 
-const path = require('path');
 const { wcagMap } = require('eslint-plugin-sfcc-a11y');
-
-function escXml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
+const { relPath, escXml } = require('./utils.js');
 
 /**
  * Formats ESLint results as JUnit XML.
@@ -26,7 +17,7 @@ function formatJunit(results) {
   let suiteXml = '';
 
   for (const result of results) {
-    const file = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
+    const file = relPath(result.filePath);
     const msgs = result.messages;
     const tests = Math.max(msgs.length, 1);
     const failures = msgs.length;

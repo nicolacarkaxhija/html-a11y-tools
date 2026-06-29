@@ -1,7 +1,7 @@
 'use strict';
 
-const path = require('path');
 const { rules } = require('eslint-plugin-sfcc-a11y');
+const { relPath } = require('./utils.js');
 
 /**
  * Formats ESLint results as SARIF 2.1.0 (Static Analysis Results Interchange Format).
@@ -40,7 +40,7 @@ function formatSarif(results) {
   // Build SARIF result entries
   const sarifResults = [];
   for (const result of results) {
-    const uri = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
+    const uri = relPath(result.filePath);
     for (const msg of result.messages) {
       const level = msg.severity === 2 ? 'error' : 'warning';
       const region = {

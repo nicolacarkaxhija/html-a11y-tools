@@ -1,16 +1,7 @@
 'use strict';
 
-const path = require('path');
 const { wcagMap } = require('eslint-plugin-sfcc-a11y');
-
-function escXml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}
+const { relPath, escXml } = require('./utils.js');
 
 /**
  * Formats ESLint results as Checkstyle XML.
@@ -24,7 +15,7 @@ function formatCheckstyle(results) {
   let fileXml = '';
 
   for (const result of results) {
-    const file = path.relative(process.cwd(), result.filePath).replace(/\\/g, '/');
+    const file = relPath(result.filePath);
     const msgs = result.messages;
     if (msgs.length === 0) continue;
 
