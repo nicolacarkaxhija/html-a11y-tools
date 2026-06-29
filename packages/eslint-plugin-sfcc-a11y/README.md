@@ -1,19 +1,26 @@
 # eslint-plugin-sfcc-a11y
 
-ESLint plugin for WCAG accessibility checks on Salesforce Commerce Cloud (SFCC) ISML templates and XML content-asset library files.
+[![npm](https://img.shields.io/npm/v/eslint-plugin-sfcc-a11y)](https://www.npmjs.com/package/eslint-plugin-sfcc-a11y)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
 
-This package is a thin SFCC adapter on top of [`eslint-plugin-html-a11y`](../eslint-plugin-html-a11y). It re-exports all 25 WCAG rules and adds:
+eslint-plugin-html-a11y adapter for enabling WCAG accessibility linting on Salesforce Commerce Cloud (SFCC) projects:
+adds the ISML sanitizer and XML content-asset processor so the same 25 WCAG rules work on .isml templates and XML content asset libraries.
 
-- **ISML sanitizer** — strips `<is*>` tags and converts `${...}` expressions to a sentinel value before parsing
-- **XML content-asset processor** — extracts HTML from `<![CDATA[...]]>` blocks in library XML files
+## Introduction
+
+TODO
 
 ## Installation
+
+Requires **Node.js ≥ 18**, **`ESLint ≥ 9`**, and **`@html-eslint/parser` ≥ 0.23**:
 
 ```sh
 npm install --save-dev eslint-plugin-sfcc-a11y @html-eslint/parser eslint
 ```
-
-**Peer dependencies:** `eslint >= 9`, `@html-eslint/parser >= 0.23`
+```yarn
+yarn add --dev eslint-plugin-sfcc-a11y @html-eslint/parser eslint
+```
 
 ## Setup
 
@@ -33,80 +40,79 @@ The `flat/recommended` config automatically:
 - Configures the ISML dynamic-expression sentinels (`__ISML_EXPR__` / `__ISML_CONTENT__`)
 - Sets all 25 rules to `"warn"` under the `sfcc-a11y/` prefix
 
+### Changing rule severity
+
+```js
+import sfccA11y from 'eslint-plugin-sfcc-a11y';
+
+export default [
+  ...sfccA11y.configs['flat/recommended'],
+  {
+    rules: {
+      'sfcc-a11y/img-alt': 'error',     // or 2
+      'sfcc-a11y/button-name': 'warn',  // or 1
+      'sfcc-a11y/html-has-lang': 'off', // or 0
+    },
+  },
+];
+```
+
+For available rules and their options, see the [html-a11y rule catalogue](../eslint-plugin-html-a11y/README.md#rules).
+
+All 25 rule names are listed under [Rules](#rules) below.
+
 ## ISML support
 
-ISML files contain syntax that is not valid HTML:
-
-- `<isif>`, `<isloop>`, `<isinclude>`, `<isset>` and other `<is*>` tags
-- `${expression}` inside attribute values: `alt="${image.alt}"`
-- `<isprint value="${expr}">` for inline text output
-- `<ispicture>`, `<iscontentasset>` for dynamic content blocks
-- ISML comments: `<%-- ... --%>`
-
-The built-in sanitizer handles all of these before the HTML parser sees the file:
-
+The built-in sanitizer handles all of these before the HTML parser processes the file:
 - `<is*>` tags → stripped (void tags) or replaced with a block spacer
 - `${...}` in attribute values → replaced with `__ISML_EXPR__`
 - `<isprint>` / `<ispicture>` / `<iscontentasset>` → replaced with `__ISML_CONTENT__`
 - ISML comments → stripped
 
-Dynamic attribute values (`__ISML_EXPR__`) are skipped by all rules to avoid false positives. Dynamic content markers (`__ISML_CONTENT__`) count as visible text content.
+Dynamic attribute values (`__ISML_EXPR__`) are skipped by all rules to avoid false positives.
+Dynamic content markers (`__ISML_CONTENT__`) count as visible text content.
+
+---
+
+ISML files enrich HTML with Salesforce-specific proprietary template syntax with `<is*>` tags, `${...}`
+expressions inside attribute values: `alt="${image.alt}"`, and `<%-- --%>` comments that would confuse a standard HTML parser.
+
+The built-in sanitizer strips or neutralises all ISML-specific constructs before parsing:
+, so rules see clean markup and don't produce false positives on
+dynamic values.
+| ISML construct | Replacement |
+|---|---|
+| `<is*>` tags (structural: `isif`, `isloop`, etc.) | block spacer (preserves line numbers) |
+| `<is*>` void tags (`isbreak`, etc.) | stripped |
+| `${...}` in attribute values | `__ISML_EXPR__` |
+| `<isprint>`, `<ispicture>`, `<iscontentasset>` | `__ISML_CONTENT__` |
+| ISML comments `<%-- --%>` | stripped |
+
+Attributes containing `__ISML_EXPR__` are always skipped (the value is only known at runtime).
+Nodes containing `__ISML_CONTENT__` count as having visible text content.
 
 ## XML content-asset support
 
-SFCC content library XML files store rich HTML in CDATA sections:
+TODO
 
-```xml
-<content-asset content-id="homepage-hero">
-  <custom-attributes>
-    <custom-attribute attribute-id="body"><![CDATA[
-      <img src="hero.jpg" alt="">
-    ]]></custom-attribute>
-  </custom-attributes>
-</content-asset>
-```
+## XML content-asset support
 
-The processor extracts each CDATA block, lints the HTML inside, and maps violations back to the correct line numbers in the original XML file.
-
-Target pattern: `**/libraries/**/*.xml`
+TODO
 
 ## Rules
 
-All 25 rules are re-exported verbatim from `eslint-plugin-html-a11y`. See the [html-a11y rule catalogue](../eslint-plugin-html-a11y/README.md#rules) for the full list with WCAG mappings.
+All 25 rules are re-exported from [`eslint-plugin-html-a11y`](../eslint-plugin-html-a11y/README.md#rules) under the `sfcc-a11y/` prefix: [...].
 
-Under the `sfcc-a11y/` prefix:
-
-```
-sfcc-a11y/img-alt
-sfcc-a11y/object-alt
-sfcc-a11y/media-has-caption
-sfcc-a11y/label
-sfcc-a11y/scope-attr-valid
-sfcc-a11y/autocomplete-valid
-sfcc-a11y/no-distracting-elements
-sfcc-a11y/interactive-supports-focus
-sfcc-a11y/no-noninteractive-tabindex
-sfcc-a11y/no-access-key
-sfcc-a11y/tabindex-no-positive
-sfcc-a11y/no-autofocus
-sfcc-a11y/link-name
-sfcc-a11y/anchor-is-valid
-sfcc-a11y/heading-has-content
-sfcc-a11y/html-has-lang
-sfcc-a11y/lang-value
-sfcc-a11y/aria-role
-sfcc-a11y/aria-props
-sfcc-a11y/aria-required-attr
-sfcc-a11y/aria-proptypes
-sfcc-a11y/aria-hidden-on-focusable
-sfcc-a11y/button-name
-sfcc-a11y/no-redundant-role
-sfcc-a11y/role-supports-aria-props
-```
 
 ## Known limitation — cross-file label/input association
 
-The `label` rule matches `<label for="x">` to `<input id="x">` within the same file. SFCC projects often split labels and inputs across `<isinclude>` files. Use an inline disable comment when needed:
+SFCC projects frequently split `<label>` and `<input>` elements across separate
+`<isinclude>` files. ESLint processes each file independently, so the `label` rule
+will report a false positive when the label tag `<label for="x">`
+is in a different file than the related input `<input id="x">`,
+which is frequently the case in SFCC projects (e.g., a shared header include).
+
+Suppress with an inline disable comment when needed:
 
 ```isml
 <%-- eslint-disable-next-line sfcc-a11y/label --%>
@@ -115,4 +121,4 @@ The `label` rule matches `<label for="x">` to `<input id="x">` within the same f
 
 ## License
 
-MIT
+MIT © [Nicola Carkaxhija](https://github.com/nicolacarkaxhija)

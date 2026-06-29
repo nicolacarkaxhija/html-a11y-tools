@@ -1,124 +1,98 @@
 # sfcc-a11y
 
-Zero-config CLI for WCAG accessibility checks on Salesforce Commerce Cloud ISML templates and XML content-asset library files.
+CLI tool for running WCAG accessibility audits on Salesforce Commerce Cloud (SFCC) ISML templates and XML content assets.
 
-No ESLint configuration required — install and run.
+This is a thin zero-config wrapper around [`eslint-plugin-sfcc-a11y`](https://www.npmjs.com/package/eslint-plugin-sfcc-a11y) that runs the same rules, but without requiring an ESLint config file or parser setup.
 
-## Installation
+Useful for one-off audits or CI pipeline scans on projects that don't already use ESLint. To get editor-integrated feedback and per-rule configuration, please use the plugin [`eslint-plugin-sfcc-a11y`](https://www.npmjs.com/package/eslint-plugin-sfcc-a11y) instead.
 
-```sh
-npm install --save-dev sfcc-a11y
-```
+[![npm](https://img.shields.io/npm/v/sfcc-a11y)](https://www.npmjs.com/package/sfcc-a11y)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
 
-Or use directly via `npx`:
-
-```sh
-npx sfcc-a11y cartridges/
-```
+---
 
 ## Usage
 
-```
-sfcc-a11y [paths...] [options]
-
-Arguments:
-  paths    Files, directories, or globs to check (default: **/*.isml and
-           **/libraries/**/*.xml in the current directory)
-
-Options:
-  -f, --format <format>  Output format: text, json, github (default: text,
-                         or github when GITHUB_ACTIONS=true)
-  --exit-zero            Always exit 0, even when violations are found
-  -V, --version          Print version
-  -h, --help             Show help
-```
-
-### Examples
-
 ```sh
-# Lint all ISML and XML files under cartridges/
-sfcc-a11y cartridges/
-
-# Lint a specific file
-sfcc-a11y cartridges/app_custom_core/cartridge/templates/default/home.isml
-
-# JSON output
-sfcc-a11y cartridges/ --format json
-
-# GitHub Actions annotations (auto-enabled when GITHUB_ACTIONS=true)
-sfcc-a11y cartridges/ --format github
-
-# Use in CI without failing the build (warnings only)
-sfcc-a11y cartridges/ --exit-zero
+sfcc-a11y [paths...]                Files, directories, or globs patterns to check
+                                    (default: **/*.isml and **/libraries/**/*.xml)
+  -f, --format <text|json|github>   Output format
+  --exit-zero                       Always exit 0, even when violations are found,
+                                    reporting them as warnings to not block CI
 ```
 
 ## Output formats
 
-### `text` (default)
+Choose with `-f, --format`:
 
-```
-cartridges/app_custom_core/templates/default/home.isml
-  12:3   warning  <img> is missing a non-empty alt attribute  sfcc-a11y/img-alt  [WCAG 1.1.1]
-  25:1   warning  <button> is missing an accessible name      sfcc-a11y/button-name  [WCAG 4.1.2]
+- **`text`** (default) human-readable terminal output
+- **`json`** array of violation objects
+- **`github`** `::warning file=...` inline PR diffs annotations
 
-2 warnings
-```
-
-### `json`
-
-Array of violation objects:
-
-```json
-[
-  {
-    "file": "cartridges/.../home.isml",
-    "line": 12,
-    "col": 3,
-    "severity": "warning",
-    "message": "<img> is missing a non-empty alt attribute",
-    "rule": "sfcc-a11y/img-alt",
-    "wcag": "WCAG 1.1.1"
-  }
-]
-```
-
-### `github`
-
-GitHub Actions workflow command annotations:
-
-```
-::warning file=cartridges/.../home.isml,line=12,col=3,title=sfcc-a11y/img-alt::<img> is missing...
-```
+Default is `text`, or `github` when `GITHUB_ACTIONS=true`.
 
 ## Exit codes
 
 | Code | Meaning |
 |---|---|
-| `0` | No violations (or `--exit-zero` was passed) |
+| `0` | No violations, or `--exit-zero` flag set |
 | `1` | One or more violations found |
-| `2` | Unexpected error (file not found, parse error, etc.) |
+| `2` | Unexpected runtime error (file not found, parse failure, etc.) |
 
 ## CI integration
 
-### GitHub Actions
+### GitHub Actions (inline annotations)
 
 ```yaml
 - name: Accessibility lint
-  run: npx sfcc-a11y cartridges/
+  run: npx sfcc-a11y cartridges/ --format github; exit ${PIPESTATUS[0]}
 ```
 
-When `GITHUB_ACTIONS=true` is set (automatically by GitHub), the output format defaults to `github` annotations, which surface violations inline in the PR diff.
+### GitHub Actions (JSON report artifact)
 
-### npm script
+```yaml
+- name: Accessibility lint
+  run: npx sfcc-a11y cartridges/ --format json > a11y-report.json; exit ${PIPESTATUS[0]}
+
+- name: Upload report
+  uses: actions/upload-artifact@v4
+  with:
+    name: a11y-report
+    path: a11y-report.json
+```
+
+### Bitbucket Pipelines (JSON report artifact)
+
+```yaml
+- step:
+    name: Accessibility lint
+    script:
+      - npx sfcc-a11y cartridges/ --format json > a11y-report.json; exit ${PIPESTATUS[0]}
+    artifacts:
+      - a11y-report.json
+```
+
+## Configuration
+
+Config is loaded from the first source found (in priority order):
+
+1. `sfcc-a11y.config.js` — dynamic config
+2. `.sfcc-a11yrc.json` — static JSON config
+3. `package.json` — `"sfcc-a11y"` key
+
+CLI flags always override the file config.
+
+**Example `.sfcc-a11yrc.json`:**
 
 ```json
 {
-  "scripts": {
-    "lint:a11y": "sfcc-a11y cartridges/"
-  }
+  "paths": ["cartridges/**/*.isml", "**/libraries/**/*.xml"],
+  "format": "text",
+  "exitZero": false
 }
 ```
 
 ## License
 
-MIT
+MIT © [Nicola Carkaxhija](https://github.com/nicolacarkaxhija)

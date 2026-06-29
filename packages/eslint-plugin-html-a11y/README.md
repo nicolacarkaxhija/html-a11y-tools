@@ -1,16 +1,40 @@
 # eslint-plugin-html-a11y
 
-25 WCAG Level A/AA accessibility rules for HTML templates parsed with [`@html-eslint/parser`](https://github.com/yeonjuan/html-eslint).
+[![npm](https://img.shields.io/npm/v/eslint-plugin-html-a11y)](https://www.npmjs.com/package/eslint-plugin-html-a11y)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
+[![ESLint](https://img.shields.io/badge/eslint-%3E%3D9-purple)](https://eslint.org)
 
-Works with any HTML-like template language: plain HTML, ISML, Jinja2, Handlebars, Django, Nunjucks, Twig — anything that `@html-eslint/parser` can parse.
+WCAG 2.2 accessibility linting for HTML-like template language `@html-eslint/parser` can parse:
+plain HTML, Jinja2, Handlebars, Twig, Django, Nunjucks, Salesforce Commerce Cloud (SFCC) ISML.
+
+## Introduction
+
+Most accessibility linters, such as `eslint-plugin-jsx-a11y` for React, or `eslint-plugin-vuejs-accessibility` for Vue,
+target a specific framework, usually the most popular frontend frameworks and libraries; they don't work on plain HTML templates,
+and they don't work on other template languages, even though the set of WCAG 2.2 rules is generic, so potentially framework-agnostic.
+
+This plugin aims to fill the gap by bringing the same set of WCAG Level A and AA checks to any HTML-like template language that
+`@html-eslint/parser` can parse to an AST, enabling static analysis before compilation.
+
+By design, this package is meant to be extended into new ones that enable the target languages to reuse the current package,
+by providing a preprocessor that strips or silences any template-specific syntax before the parser runs,
+so that the result of the reduction can rely on the hereby supported engine and rules, without having to reimplement them for each new template language.
 
 ## Installation
 
-```sh
-npm install --save-dev eslint-plugin-html-a11y @html-eslint/parser eslint
-```
+Requires Node.js ≥ 18, and the peer dependencies `eslint >= 9` and `@html-eslint/parser >= 0.23`.
 
-**Peer dependencies:** `eslint >= 9`, `@html-eslint/parser >= 0.23`
+```sh
+# npm
+npm install --save-dev eslint-plugin-html-a11y @html-eslint/parser eslint
+
+# yarn
+yarn add --dev eslint-plugin-html-a11y @html-eslint/parser eslint
+
+# pnpm
+pnpm add -D eslint-plugin-html-a11y @html-eslint/parser eslint
+```
 
 ## Setup
 
@@ -19,28 +43,27 @@ Add to your `eslint.config.js` (ESLint v9 flat config):
 ```js
 import htmlA11y from 'eslint-plugin-html-a11y';
 
-export default [
-  ...htmlA11y.configs.recommended,
-];
+export default [...htmlA11y.configs.recommended];
 ```
 
-The `recommended` config applies `@html-eslint/parser` to `**/*.html` files and sets all 25 rules to `"warn"`.
+The `recommended` config applies `@html-eslint/parser` to `**/*.html` files and enables all 25 rules as `"warn"`.
 
-### Custom configuration
+### Override with custom configurations
 
 ```js
 import htmlA11y from 'eslint-plugin-html-a11y';
 import htmlParser from '@html-eslint/parser';
 
 export default [
+  ...htmlA11y.configs.recommended,
   {
     files: ['**/*.html', '**/*.jinja2'],
     plugins: { 'html-a11y': htmlA11y },
     languageOptions: { parser: htmlParser },
     rules: {
-      'html-a11y/img-alt': 'error',
-      'html-a11y/button-name': 'warn',
-      // ... etc.
+      'html-a11y/img-alt': 'error',     // or 2
+      'html-a11y/button-name': 'warn',  // or 1
+      'html-a11y/no-autofocus': 'off',  // or 0
     },
   },
 ];
@@ -48,30 +71,9 @@ export default [
 
 ### Dynamic template values
 
-If your template engine uses a marker in attribute values to represent runtime expressions, configure it via `settings` so the plugin can skip those attributes rather than reporting false positives:
-
-```js
-export default [
-  {
-    files: ['**/*.html'],
-    plugins: { 'html-a11y': htmlA11y },
-    languageOptions: { parser: htmlParser },
-    settings: {
-      'html-a11y': {
-        dynamicValueMarker: '__DYNAMIC__',   // placeholder in attribute values
-        dynamicContentMarker: '__CONTENT__', // placeholder in text nodes
-      },
-    },
-    rules: { ... },
-  },
-];
-```
-
-If no markers are configured, all literal attribute values are checked as-is.
+TODO
 
 ## Rules
-
-All 25 rules implement WCAG 2.2 success criteria at Level A or AA.
 
 | Rule | WCAG SC | Level | Description |
 |---|---|---|---|
@@ -81,12 +83,12 @@ All 25 rules implement WCAG 2.2 success criteria at Level A or AA.
 | `label` | 1.3.1 | A | Form controls must have an associated accessible label |
 | `scope-attr-valid` | 1.3.1 | A | `scope` on `<th>` must be `col`, `row`, `colgroup`, or `rowgroup` |
 | `autocomplete-valid` | 1.3.5 | AA | `autocomplete` attribute must use valid tokens |
-| `no-distracting-elements` | 2.2.2 | A | Forbid `<marquee>` and `<blink>` |
 | `interactive-supports-focus` | 2.1.1 | A | Elements with interactive ARIA roles must be keyboard-focusable |
 | `no-noninteractive-tabindex` | 2.1.1 | A | `tabindex >= 0` must not appear on non-interactive elements |
 | `no-access-key` | 2.1.4 | A | Forbid `accesskey` attribute |
-| `tabindex-no-positive` | 2.4.3 | AA | `tabindex` must not be greater than 0 |
+| `no-distracting-elements` | 2.2.2 | A | Forbid `<marquee>` and `<blink>` |
 | `no-autofocus` | 2.4.3 | AA | Forbid `autofocus` attribute |
+| `tabindex-no-positive` | 2.4.3 | AA | `tabindex` must not be greater than 0 |
 | `link-name` | 2.4.4 | A | `<a>` and `<area href>` must have discernible text or `aria-label` |
 | `anchor-is-valid` | 2.4.4 | A | `<a>` must have a navigating `href` (not `#`, `javascript:`, empty) |
 | `heading-has-content` | 2.4.6 | AA | `<h1>`–`<h6>` must have non-empty text content |
@@ -101,10 +103,6 @@ All 25 rules implement WCAG 2.2 success criteria at Level A or AA.
 | `no-redundant-role` | 4.1.2 | AA | Explicit `role` must not duplicate the element's implicit ARIA role |
 | `role-supports-aria-props` | 4.1.2 | A | `aria-*` attributes must be in the element's role's supported set |
 
-## Attribution
-
-Inspired by [`eslint-plugin-jsx-a11y`](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y) (rule names and WCAG mappings) and [`aria-query`](https://github.com/A11yance/aria-query) (ARIA data). No source code was copied.
-
 ## License
 
-MIT
+MIT © [Nicola Carkaxhija](https://github.com/nicolacarkaxhija)
