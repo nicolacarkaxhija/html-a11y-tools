@@ -1,6 +1,6 @@
 {
   "name": "sfcc-a11y",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0",
   "description": "Zero-config WCAG accessibility CLI for SFCC ISML and XML files",
   "bin": {
     "sfcc-a11y": "bin/sfcc-a11y.js"
