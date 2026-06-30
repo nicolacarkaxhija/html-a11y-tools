@@ -1,5 +1,11 @@
 # eslint-plugin-sfcc-a11y
 
+## 2.2.1
+
+### Patch Changes
+
+- Fix: revert broken 2.2.0 — ESLint v8 does not propagate `overrides` from plugin configs accessed via `extends`. Processor and parser wiring for `.isml` files must still be added manually to the consuming project's `.eslintrc.json`.
+
 ## 2.2.0
 
 ### Minor Changes
