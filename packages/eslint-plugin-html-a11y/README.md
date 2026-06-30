@@ -5,21 +5,21 @@
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
 [![ESLint](https://img.shields.io/badge/eslint-%3E%3D9-purple)](https://eslint.org)
 
-WCAG 2.2 accessibility linting for HTML-like template language `@html-eslint/parser` can parse:
-plain HTML, Jinja2, Handlebars, Twig, Django, Nunjucks, Salesforce Commerce Cloud (SFCC) ISML.
+WCAG 2.2 accessibility linting for HTML-like template languages that `@html-eslint/parser` can parse natively:
+plain HTML, Jinja2, Handlebars, Twig, Django, Nunjucks, and any other language whose template syntax is
+transparent enough that the parser can produce a valid AST out of it.
+
+> **SFCC ISML?** ISML is not natively supported by `@html-eslint/parser`, since its `<is*>` tags and `${...}` expressions cause parse errors. Use [`eslint-plugin-sfcc-a11y`](../eslint-plugin-sfcc-a11y) instead, which adds an ISML sanitizer on top of this plugin.
 
 ## Introduction
 
 Most accessibility linters, such as `eslint-plugin-jsx-a11y` for React, or `eslint-plugin-vuejs-accessibility` for Vue,
 target a specific framework, usually the most popular frontend frameworks and libraries; they don't work on plain HTML templates,
-and they don't work on other template languages, even though the set of WCAG 2.2 rules is generic, so potentially framework-agnostic.
+and they don't work on other template languages, even though the underlying set of WCAG 2.2 rules is generic, so potentially framework-agnostic.
 
-This plugin aims to fill the gap by bringing the same set of WCAG Level A and AA checks to any HTML-like template language that
-`@html-eslint/parser` can parse to an AST, enabling static analysis before compilation.
+This plugin fills that gap: 25 WCAG Level A/AA rules that work with any language `@html-eslint/parser` can parse natively. Template expressions like `{{ name }}` or `{% if cond %}` appear as opaque text in the AST, so the parser does not choke on them and rules still fire on the surrounding HTML structure.
 
-By design, this package is meant to be extended into new ones that enable the target languages to reuse the current package,
-by providing a preprocessor that strips or silences any template-specific syntax before the parser runs,
-so that the result of the reduction can rely on the hereby supported engine and rules, without having to reimplement them for each new template language.
+For template languages whose syntax does cause parse errors (ISML, and potentially others), the right approach is an adapter package that preprocesses the file, by stripping or neutralising non-HTML syntax, before handing it to the parser. This plugin exposes `buildRulesFor(prefix, rulesMap, config)` precisely so adapters can inherit the full rule set without reimplementing it.
 
 ## Installation
 
@@ -71,7 +71,26 @@ export default [
 
 ### Dynamic template values
 
-TODO
+If you run a preprocessor that replaces template expressions with a sentinel string before the file gets parsed, configure the sentinel so rules know to treat those attribute values and text nodes as non-empty runtime values rather than flagging them as violations:
+
+```js
+export default [
+  ...htmlA11y.configs.recommended,
+  {
+    files: ['**/*.html'],
+    settings: {
+      'html-a11y': {
+        dynamicValueMarker: '__EXPR__',    // skip attributes whose value contains this string
+        dynamicContentMarker: '__CONTENT__', // treat text nodes containing this string as non-empty
+      },
+    },
+  },
+];
+```
+
+Without a preprocessor — if template expressions appear literally in the source (e.g., `alt="{{ image.alt }}"`) — no configuration is needed. The parser sees the expression as a non-empty string and rules pass without false positives in the common case.
+
+Adapter packages handle this automatically. `eslint-plugin-sfcc-a11y`, for example, replaces ISML `${...}` expressions with `__ISML_EXPR__` and configures that marker in the recommended settings, so no manual setup is required.
 
 ## Rules
 
