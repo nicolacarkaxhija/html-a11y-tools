@@ -1,5 +1,11 @@
 # eslint-plugin-html-a11y
 
+## 0.2.1
+
+### Patch Changes
+
+- Update README: revise introduction and dynamic template values section.
+
 ## 0.2.0
 
 ### Minor Changes
