@@ -83,12 +83,8 @@ const plugin = {
 function buildLegacyConfig(rules) {
   return {
     plugins: ['sfcc-a11y'],
-    overrides: [
-      { files: ['**/*.isml'], processor: 'sfcc-a11y/isml-sanitizer' },
-      { files: ['**/__sanitized.html'], parser: '@html-eslint/parser', settings: sfccSettings, rules },
-      { files: ['**/libraries/**/*.xml'], processor: 'sfcc-a11y/.xml' },
-      { files: ['**/libraries/**/*.xml/block_*.html'], parser: '@html-eslint/parser', settings: sfccSettings, rules },
-    ],
+    settings: sfccSettings,
+    rules,
   };
 }
 
@@ -127,9 +123,9 @@ plugin.configs = {
 
   // ESLint v8 legacy config — used via "plugin:sfcc-a11y/recommended" in .eslintrc.json
   //
-  // overrides wire up the processor, parser, and rules for .isml and .xml files so
-  // consumers don't need to add them manually. Parser strings are resolved from the
-  // project root by ESLint v8, so @html-eslint/parser must be a project-level dep.
+  // ESLint v8 does not propagate `overrides` from plugin configs accessed via `extends`.
+  // Processor and parser wiring for .isml and .xml files must therefore be added manually
+  // to the consuming project's .eslintrc.json overrides array.
   recommended: buildLegacyConfig(recommendedRules),
 
 };

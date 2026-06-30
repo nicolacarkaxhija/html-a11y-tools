@@ -150,58 +150,30 @@ describe('level-A configs', () => {
   });
 
   it('recommended-a excludes all AA rules', () => {
-    const htmlOverride = plugin.configs['recommended-a'].overrides[1];
-    expect(Object.keys(htmlOverride.rules).length).toBe(totalRules - aaRuleCount);
-    expect(htmlOverride.rules['sfcc-a11y/autocomplete-valid']).toBeUndefined();
-    expect(htmlOverride.rules['sfcc-a11y/video-has-description']).toBeUndefined();
+    expect(Object.keys(plugin.configs['recommended-a'].rules).length).toBe(totalRules - aaRuleCount);
+    expect(plugin.configs['recommended-a'].rules['sfcc-a11y/autocomplete-valid']).toBeUndefined();
+    expect(plugin.configs['recommended-a'].rules['sfcc-a11y/video-has-description']).toBeUndefined();
   });
 });
 
 describe('legacy recommended config structure', () => {
   for (const configName of ['recommended', 'recommended-a', 'recommended-error']) {
-    it(`${configName} has plugins, overrides (no top-level rules)`, () => {
+    it(`${configName} has plugins, settings, and rules at root level`, () => {
       const cfg = plugin.configs[configName];
       expect(cfg.plugins).toContain('sfcc-a11y');
-      expect(Array.isArray(cfg.overrides)).toBe(true);
-      expect(cfg.overrides).toHaveLength(4);
-      expect(cfg.rules).toBeUndefined();
-    });
-
-    it(`${configName} overrides[0] registers the ISML processor`, () => {
-      const override = plugin.configs[configName].overrides[0];
-      expect(override.files).toContain('**/*.isml');
-      expect(override.processor).toBe('sfcc-a11y/isml-sanitizer');
-    });
-
-    it(`${configName} overrides[1] sets parser and rules for sanitized HTML`, () => {
-      const override = plugin.configs[configName].overrides[1];
-      expect(override.files).toContain('**/__sanitized.html');
-      expect(override.parser).toBe('@html-eslint/parser');
-      expect(override.settings?.['html-a11y']?.dynamicValueMarker).toBe('__ISML_EXPR__');
-      expect(typeof override.rules).toBe('object');
-    });
-
-    it(`${configName} overrides[2] registers the XML processor`, () => {
-      const override = plugin.configs[configName].overrides[2];
-      expect(override.files).toContain('**/libraries/**/*.xml');
-      expect(override.processor).toBe('sfcc-a11y/.xml');
-    });
-
-    it(`${configName} overrides[3] sets parser and rules for XML HTML blocks`, () => {
-      const override = plugin.configs[configName].overrides[3];
-      expect(override.files).toContain('**/libraries/**/*.xml/block_*.html');
-      expect(override.parser).toBe('@html-eslint/parser');
-      expect(typeof override.rules).toBe('object');
+      expect(cfg.settings?.['html-a11y']?.dynamicValueMarker).toBe('__ISML_EXPR__');
+      expect(cfg.settings?.['html-a11y']?.dynamicContentMarker).toBe('__ISML_CONTENT__');
+      expect(typeof cfg.rules).toBe('object');
     });
   }
 
-  it('recommended-error overrides[1] rules are all "error"', () => {
-    const rules = plugin.configs['recommended-error'].overrides[1].rules;
+  it('recommended-error rules are all "error"', () => {
+    const rules = plugin.configs['recommended-error'].rules;
     expect(Object.values(rules).every((v) => v === 'error')).toBe(true);
   });
 
-  it('recommended overrides[1] rules are all "warn"', () => {
-    const rules = plugin.configs.recommended.overrides[1].rules;
+  it('recommended rules are all "warn"', () => {
+    const rules = plugin.configs.recommended.rules;
     expect(Object.values(rules).every((v) => v === 'warn')).toBe(true);
   });
 });
