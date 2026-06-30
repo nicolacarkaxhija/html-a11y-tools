@@ -1,5 +1,13 @@
 # eslint-plugin-sfcc-a11y
 
+## 2.2.4
+
+### Patch Changes
+
+- docs: document ESLint v8 filterCodeBlock limitation, lint script setup, ISML sanitizer, and XML processor
+- Updated dependencies
+  - eslint-plugin-html-a11y@0.2.4
+
 ## 2.2.3
 
 ### Patch Changes

@@ -9,7 +9,6 @@ WCAG 2.2 accessibility linting for HTML-like template languages that `@html-esli
 plain HTML, Jinja2, Handlebars, Twig, Django, Nunjucks, and any other language whose template syntax is
 transparent enough that the parser can produce a valid AST out of it.
 
-> **SFCC ISML?** ISML is not natively supported by `@html-eslint/parser`, since its `<is*>` tags and `${...}` expressions cause parse errors. Use [`eslint-plugin-sfcc-a11y`](../eslint-plugin-sfcc-a11y) instead, which adds an ISML sanitizer on top of this plugin.
 
 ## Introduction
 
@@ -43,9 +42,7 @@ pnpm add -D eslint-plugin-html-a11y @html-eslint/parser eslint
 
 ## Setup
 
-> **ESLint v8 users:** this plugin does not ship a legacy `.eslintrc` config. Use it via an adapter like [`eslint-plugin-sfcc-a11y`](../eslint-plugin-sfcc-a11y), or configure the parser and rules manually. The rule implementations are fully compatible with ESLint v8.
-
-Add to your `eslint.config.js` (ESLint v9 flat config):
+### ESLint v9 — `eslint.config.js` (recommended)
 
 ```js
 import htmlA11y from 'eslint-plugin-html-a11y';
@@ -54,6 +51,29 @@ export default [...htmlA11y.configs.recommended];
 ```
 
 The `recommended` config applies `@html-eslint/parser` to `**/*.html` files and enables all 25 rules as `"warn"`.
+
+### ESLint v8 — `.eslintrc.json`
+
+This plugin cannot ship a legacy `.eslintrc` config. Please configure the parser and rules manually:
+
+```json
+{
+  "plugins": ["html-a11y"],
+  "overrides": [
+    {
+      "files": ["**/*.html"],
+      "parser": "@html-eslint/parser",
+      "rules": {
+        "html-a11y/img-alt": "warn",
+        "html-a11y/button-name": "warn",
+        "html-a11y/link-name": "warn"
+      }
+    }
+  ]
+}
+```
+
+For the full rule list, see [Rules](#rules) below and prefix each name with `html-a11y/`.
 
 ### Override with custom configurations
 

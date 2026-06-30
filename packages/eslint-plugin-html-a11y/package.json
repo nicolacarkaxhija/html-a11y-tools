@@ -1,6 +1,6 @@
 {
   "name": "eslint-plugin-html-a11y",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "ESLint plugin for WCAG accessibility checks on HTML templates parsed with @html-eslint/parser",
   "exports": {
     ".": "./index.js"
