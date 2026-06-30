@@ -80,6 +80,18 @@ const plugin = {
   },
 };
 
+function buildLegacyConfig(rules) {
+  return {
+    plugins: ['sfcc-a11y'],
+    overrides: [
+      { files: ['**/*.isml'], processor: 'sfcc-a11y/isml-sanitizer' },
+      { files: ['**/__sanitized.html'], parser: '@html-eslint/parser', settings: sfccSettings, rules },
+      { files: ['**/libraries/**/*.xml'], processor: 'sfcc-a11y/.xml' },
+      { files: ['**/libraries/**/*.xml/block_*.html'], parser: '@html-eslint/parser', settings: sfccSettings, rules },
+    ],
+  };
+}
+
 // ESLint v9 flat config — 4 entries
 // 1. Apply ISML sanitizer (replaces ${...} before parsing)
 // 2. Parse sanitized virtual file with rules
@@ -115,18 +127,10 @@ plugin.configs = {
 
   // ESLint v8 legacy config — used via "plugin:sfcc-a11y/recommended" in .eslintrc.json
   //
-  // Rules are registered at the ROOT level (not inside overrides) because ESLint v8
-  // does not reliably cascade overrides from shared configs into projects that have
-  // their own overrides block. Rules only fire when @html-eslint/parser produces a
-  // HTML AST with Tag/Attribute nodes, so they are harmless on JS/TS files.
-  //
-  // The processor/parser/settings overrides MUST be added directly to the consuming
-  // project's .eslintrc.json — they cannot be reliably injected via a shared config.
-  recommended: {
-    plugins: ['sfcc-a11y'],
-    settings: sfccSettings,
-    rules: recommendedRules,
-  },
+  // overrides wire up the processor, parser, and rules for .isml and .xml files so
+  // consumers don't need to add them manually. Parser strings are resolved from the
+  // project root by ESLint v8, so @html-eslint/parser must be a project-level dep.
+  recommended: buildLegacyConfig(recommendedRules),
 
 };
 
@@ -134,19 +138,13 @@ plugin.configs = {
 const levelARules = buildRules({ level: 'A' });
 plugin.configs['flat/recommended-a'] = plugin.configs['flat/recommended']
   .map((entry) => (entry.rules ? { ...entry, rules: levelARules } : entry));
-plugin.configs['recommended-a'] = {
-  ...plugin.configs.recommended,
-  rules: levelARules,
-};
+plugin.configs['recommended-a'] = buildLegacyConfig(levelARules);
 
 // Error-severity configs: same rules at "error" instead of "warn"
 const recommendedErrorRules = buildRules({ severity: 'error' });
 plugin.configs['flat/recommended-error'] = plugin.configs['flat/recommended']
   .map((entry) => (entry.rules ? { ...entry, rules: recommendedErrorRules } : entry));
-plugin.configs['recommended-error'] = {
-  ...plugin.configs.recommended,
-  rules: recommendedErrorRules,
-};
+plugin.configs['recommended-error'] = buildLegacyConfig(recommendedErrorRules);
 
 module.exports = plugin;
 module.exports.sanitize = sanitize;
