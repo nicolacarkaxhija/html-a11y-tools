@@ -17,9 +17,12 @@ Most accessibility linters, such as `eslint-plugin-jsx-a11y` for React, or `esli
 target a specific framework, usually the most popular frontend frameworks and libraries; they don't work on plain HTML templates,
 and they don't work on other template languages, even though the underlying set of WCAG 2.2 rules is generic, so potentially framework-agnostic.
 
-This plugin fills that gap: 25 WCAG Level A/AA rules that work with any language `@html-eslint/parser` can parse natively. Template expressions like `{{ name }}` or `{% if cond %}` appear as opaque text in the AST, so the parser does not choke on them and rules still fire on the surrounding HTML structure.
+This plugin aims to fill the gap by bringing the same set of WCAG Level A and AA checks to any HTML-like template language that
+`@html-eslint/parser` can parse to an AST, enabling static analysis before compilation.
 
-For template languages whose syntax does cause parse errors (ISML, and potentially others), the right approach is an adapter package that preprocesses the file, by stripping or neutralising non-HTML syntax, before handing it to the parser. This plugin exposes `buildRulesFor(prefix, rulesMap, config)` precisely so adapters can inherit the full rule set without reimplementing it.
+By design, this package is meant to be extended into new ones that enable the target languages to reuse the current package,
+by providing a preprocessor that strips or silences any template-specific syntax before the parser runs,
+so that the result of the reduction can rely on the hereby supported engine and rules, without having to reimplement them for each new template language.
 
 ## Installation
 
@@ -71,26 +74,7 @@ export default [
 
 ### Dynamic template values
 
-If you run a preprocessor that replaces template expressions with a sentinel string before the file gets parsed, configure the sentinel so rules know to treat those attribute values and text nodes as non-empty runtime values rather than flagging them as violations:
-
-```js
-export default [
-  ...htmlA11y.configs.recommended,
-  {
-    files: ['**/*.html'],
-    settings: {
-      'html-a11y': {
-        dynamicValueMarker: '__EXPR__',    // skip attributes whose value contains this string
-        dynamicContentMarker: '__CONTENT__', // treat text nodes containing this string as non-empty
-      },
-    },
-  },
-];
-```
-
-Without a preprocessor — if template expressions appear literally in the source (e.g., `alt="{{ image.alt }}"`) — no configuration is needed. The parser sees the expression as a non-empty string and rules pass without false positives in the common case.
-
-Adapter packages handle this automatically. `eslint-plugin-sfcc-a11y`, for example, replaces ISML `${...}` expressions with `__ISML_EXPR__` and configures that marker in the recommended settings, so no manual setup is required.
+TODO
 
 ## Rules
 
