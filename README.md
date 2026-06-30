@@ -18,9 +18,12 @@ Monorepo for WCAG 2.2 accessibility linting tools targeting HTML template ecosys
 
 Most accessibility linters target a single framework, such as React (`eslint-plugin-jsx-a11y`), Vue (`eslint-plugin-vuejs-accessibility`), and so on. Plain HTML templates and non-mainstream template languages are left without tooling, even though the underlying WCAG 2.2 rules are fully framework-agnostic.
 
-`eslint-plugin-html-a11y` fills that gap: 25 WCAG Level A/AA rules that work with any language `@html-eslint/parser` can parse: plain HTML, Jinja2, Handlebars, Twig, Django templates, Nunjucks, and so on. The plugin is designed to be extended into template-specific adapters: each adapter provides a preprocessor that neutralises template syntax before the parser runs, then inherits the full rule set without reimplementing it.
+This plugin aims to fill the gap by bringing the same set of WCAG Level A and AA checks to any HTML-like template language that
+`@html-eslint/parser` can parse to an AST, enabling static analysis before compilation.
 
-`eslint-plugin-sfcc-a11y` is the first such adapter, adding an ISML sanitizer and an XML content-asset processor. `sfcc-a11y` wraps both in a zero-config CLI.
+By design, this package is meant to be extended into new ones that enable the target languages to reuse the current package,
+by providing a preprocessor that strips or silences any template-specific syntax before the parser runs,
+so that the result of the reduction can rely on the hereby supported engine and rules, without having to reimplement them for each new template language.
 
 ## Architecture
 

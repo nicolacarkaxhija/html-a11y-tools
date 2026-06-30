@@ -17,9 +17,14 @@ Most accessibility linters, such as `eslint-plugin-jsx-a11y` for React, or `esli
 target a specific framework, usually the most popular frontend frameworks and libraries; they don't work on plain HTML templates,
 and they don't work on other template languages, even though the underlying set of WCAG 2.2 rules is generic, so potentially framework-agnostic.
 
-This plugin fills that gap: 25 WCAG Level A/AA rules that work with any language `@html-eslint/parser` can parse natively. Template expressions like `{{ name }}` or `{% if cond %}` appear as opaque text in the AST, so the parser does not choke on them and rules still fire on the surrounding HTML structure.
+This plugin aims to fill the gap by bringing the same set of WCAG Level A and AA checks to any HTML-like template language that
+`@html-eslint/parser` can parse to an AST, enabling static analysis before compilation.
 
-For template languages whose syntax does cause parse errors (ISML, and potentially others), the right approach is an adapter package that preprocesses the file, by stripping or neutralising non-HTML syntax, before handing it to the parser. This plugin exposes `buildRulesFor(prefix, rulesMap, config)` precisely so adapters can inherit the full rule set without reimplementing it.
+Dynamically evaluated template expressions like `{{ name }}` or `{% if cond %}` are sanitized and get then treated as text in the AST, so the parser does not choke on them and rules still fire on the surrounding HTML structure.
+
+By design, this package is meant to be extended into new ones to enable the hereby shipped rules to work on other template languages whose syntax is not natively supported by `@html-eslint/parser`, such as ISML.
+
+An adapter package is expected to provide a preprocessor that sanitizes any template-specific (non-HTML) syntax, before handing it to the parser. For this purpose, this plugin exposes `buildRulesFor(prefix, rulesMap, config)` so adapters can inherit the hereby supported engine and rule set without reimplementing them. The sole responsibility of the adapters is to carry out the reduction operations. 
 
 ## Installation
 
