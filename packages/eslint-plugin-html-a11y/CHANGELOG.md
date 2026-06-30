@@ -1,5 +1,11 @@
 # eslint-plugin-html-a11y
 
+## 0.2.3
+
+### Patch Changes
+
+- Update READMEs with accurate ESLint v8/v9 setup instructions and corrected introduction sections.
+
 ## 0.2.2
 
 ### Patch Changes
